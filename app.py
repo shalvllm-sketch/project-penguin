@@ -253,6 +253,10 @@ if not st.session_state.authenticated:
     st.stop() 
 
 # --- MAIN APP ---
+if "voice_draft" not in st.session_state:
+    st.session_state.voice_draft = None
+
+
 st.markdown('<p class="title-text">My Capybara ❤️</p>', unsafe_allow_html=True)
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏠 Us", "🍽️ Food", "🎰 Play", "💌 Vent", "📍 Map"])
@@ -401,16 +405,34 @@ st.markdown("### 🎙️ Send a Voice Note")
 
 audio_file = st.audio_input("Hold to record")
 
+# Store recording as draft
 if audio_file:
-    with st.spinner("Sending your voice..."):
-        raw_url = upload_voice_to_github(audio_file.getvalue(), "wav")
+    st.session_state.voice_draft = audio_file.getvalue()
+    st.success("Voice recorded. Tap Send when ready 💌")
 
-        send_notification(
-            f"🎧 New voice note from Capybara 💖\n\n▶️ Listen:\n{raw_url}"
-        )
+# Only show Send button if a draft exists
+if st.session_state.voice_draft:
+    col1, col2 = st.columns(2)
 
-    st.success("Voice note sent 💕")
+    with col1:
+        if st.button("❌ Discard", use_container_width=True):
+            st.session_state.voice_draft = None
+            st.info("Recording discarded")
 
+    with col2:
+        if st.button("📤 Send Voice", use_container_width=True):
+            with st.spinner("Sending your voice..."):
+                raw_url = upload_voice_to_github(
+                    st.session_state.voice_draft,
+                    "webm"  # or wav if you prefer
+                )
+
+                send_notification(
+                    f"🎧 New voice note from Capybara 💖\n\n▶️ Listen:\n{raw_url}"
+                )
+
+            st.session_state.voice_draft = None
+            st.success("Voice note sent 💕")
 
 
 # --- TAB 5: MAP OF US ---
