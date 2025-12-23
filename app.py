@@ -123,21 +123,28 @@ def upload_voice_to_github(audio_bytes, extension):
 
     return raw_url
 
-def get_movie_suggestion(mood, platform):
+def get_movie_suggestion(mood, platform, language):
     if not client: return "Watch 'Fifty Shades' or '365 Days' (AI Offline)"
     
-    # Handle specific "Spicy" mood context for better results
+    # Handle specific "Spicy" mood context
     if "Sexy" in mood or "Spicy" in mood:
         mood_context = "Erotic, Steamy, High-Chemistry Romance, or Sensual Thriller"
     else:
         mood_context = mood
 
+    # Handle Language Context
+    if language == "Any":
+        lang_prompt = "Any language (English, Hindi, or Korean preferred)."
+    else:
+        lang_prompt = f"Strictly in {language} language (or excellent dub)."
+
     try:
         prompt_text = (
             f"Suggest 1 specific Movie or Web Series available on {platform} (India Region Library). "
             f"The mood/genre is: {mood_context}. "
+            f"Language Constraint: {lang_prompt}. "
             f"We are a couple (Shalv and Capybara). "
-            f"Give a 1-sentence plot summary and a 1-sentence cheeky/witty reason why it fits the mood."
+            f"Give a 1-sentence plot summary and a 1-sentence cheeky/witty reason why we should watch it."
         )
         
         response = client.chat.completions.create(
@@ -150,6 +157,10 @@ def get_movie_suggestion(mood, platform):
         return response.choices[0].message.content
     except:
         return "Just watch 'Bridgerton' on Netflix. It hits the spot!"
+        
+
+
+
 # --- CUSTOM CSS ---
 st.markdown("""
     <style>
@@ -571,25 +582,34 @@ with tab6:
     st.markdown("### 🍿 Movie Night Picker")
     st.write("Can't decide what to watch? Let my chintu sa bot pick.")
 
-    col1, col2 = st.columns(2)
+    # 3 Columns now: Mood | Language | Platform
+    col1, col2, col3 = st.columns(3)
+    
     with col1:
         mood = st.selectbox("Current Mood", [
             "Romantic 🥰", 
-            "Spicy/Sexy 🌶️",   # <--- Added this as requested
+            "Spicy/Sexy 🌶️", 
             "Comedy 😂", 
             "Thriller/Mystery 🕵️‍♀️", 
             "Horror 👻", 
             "Feel Good ✨", 
             "Cry my eyes out 😭"
         ])
+    
     with col2:
+        language = st.selectbox("Language", [
+            "Any", "English", "Hindi", "Korean", "Spanish"
+        ])
+
+    with col3:
         platform = st.selectbox("Platform", [
             "Netflix", "Amazon Prime", "Hotstar", "Any"
         ])
 
     if st.button("Recommend Something 🎞️", use_container_width=True):
-        with st.spinner("Checking Indian libraries..."): # Updated spinner text
-            suggestion = get_movie_suggestion(mood, platform)
+        with st.spinner("Checking Indian libraries..."): 
+            # Pass all 3 variables now
+            suggestion = get_movie_suggestion(mood, platform, language)
             st.success(suggestion)
             
             # Special effects for romantic/spicy moods
