@@ -245,7 +245,7 @@ if not st.session_state.authenticated:
         st.write("Password hint: What do I call you?")
         password = st.text_input("Password", type="password", label_visibility="collapsed")
         if st.button("Unlock ❤️", use_container_width=True):
-            if password.lower() == "capybara123": 
+            if password.lower() == "capybara": 
                 st.session_state.authenticated = True
                 st.rerun()
             elif password:
