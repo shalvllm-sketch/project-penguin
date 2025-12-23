@@ -136,13 +136,14 @@ st.markdown("""
     p, div, label, span, li { color: #000000 !important; font-weight: 600; }
 
     /* ========================= */
-    /* 🔥 MOBILE INPUT FIX ONLY */
+    /* 🔥 MOBILE INPUT & DROPDOWN FIX (GREY FIX) */
     /* ========================= */
 
     :root {
         color-scheme: light !important;
     }
 
+    /* Force Input Boxes to be White with Black Text */
     input, textarea, select {
         background-color: #ffffff !important;
         color: #000000 !important;
@@ -151,15 +152,38 @@ st.markdown("""
         border: 2px solid #000000 !important;
     }
 
-    .stTextInput input,
-    .stTextArea textarea,
-    .stSelectbox select,
-    .stPassword input {
+    /* FORCE THE DROPDOWN MENU TO BE WHITE */
+    div[data-baseweb="select"] > div {
         background-color: #ffffff !important;
         color: #000000 !important;
-        -webkit-text-fill-color: #000000 !important;
+        border-color: #000000 !important;
+    }
+    
+    /* The Pop-up Menu container */
+    div[data-baseweb="popover"], div[data-baseweb="menu"] {
+        background-color: #ffffff !important;
+        border: 2px solid black !important;
+    }
+    
+    /* The individual options in the list */
+    div[data-baseweb="option"] {
+        background-color: #ffffff !important;
+        color: #000000 !important; 
+    }
+    
+    /* Hover effect for options (Pink highlight) */
+    div[data-baseweb="option"]:hover {
+        background-color: #FFC0CB !important;
+        color: #000000 !important;
+    }
+    
+    /* Selected option */
+    div[aria-selected="true"] {
+        background-color: #FFC0CB !important;
+        color: #000000 !important;
     }
 
+    /* Placeholder Text Color */
     ::placeholder {
         color: #555555 !important;
         opacity: 1 !important;
@@ -168,10 +192,6 @@ st.markdown("""
     #MainMenu, footer, header {visibility: hidden;}
     </style>
     """, unsafe_allow_html=True)
-
-# --- AUTHENTICATION ---
-# ⬇️ EVERYTHING BELOW IS 100% YOUR ORIGINAL CODE ⬇️
-
 
 # --- AUTHENTICATION ---
 if "authenticated" not in st.session_state:
@@ -185,7 +205,7 @@ if not st.session_state.authenticated:
         st.write("Password hint: What do I call you?")
         password = st.text_input("Password", type="password", label_visibility="collapsed")
         if st.button("Unlock ❤️", use_container_width=True):
-            if password.lower() == "capybara": 
+            if password.lower() == "capybara123": 
                 st.session_state.authenticated = True
                 st.rerun()
             elif password:
@@ -194,8 +214,6 @@ if not st.session_state.authenticated:
 
 # --- MAIN APP ---
 st.markdown('<p class="title-text">My Capybara ❤️</p>', unsafe_allow_html=True)
-
-# NOTE: Global GIF removed. GIFs are now inside specific tabs.
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏠 Us", "🍽️ Food", "🎰 Play", "💌 Vent", "📍 Map"])
 
