@@ -10,6 +10,8 @@ from openai import AzureOpenAI
 import base64
 import uuid
 from datetime import datetime
+from streamlit_audio_recorder import audio_recorder
+
 
 
 # --- CONFIGURATION ---
@@ -395,24 +397,27 @@ with tab4:
 
 
 
-
-
 st.markdown("---")
-st.markdown("### 🎙️ Voice Note (Test)")
+st.markdown("### 🎙️ Send a Voice Note")
 
-voice = st.file_uploader(
-    "Upload a short voice note",
-    type=["mp3", "m4a", "wav"]
+audio_bytes = audio_recorder(
+    text="Tap to record",
+    recording_color="#e74c3c",
+    neutral_color="#2ecc71",
+    icon_name="microphone",
+    icon_size="3x"
 )
 
-if voice and st.button("UPLOAD VOICE (TEST)", use_container_width=True):
-    with st.spinner("Uploading your voice..."):
-        ext = voice.name.split(".")[-1]
-        raw_url = upload_voice_to_github(voice.getbuffer(), ext)
+if audio_bytes:
+    with st.spinner("Sending your voice..."):
+        raw_url = upload_voice_to_github(audio_bytes, "wav")
 
-    st.success("Uploaded successfully!")
-    st.write("Direct audio link:")
-    st.write(raw_url)
+        send_notification(
+            f"🎧 New voice note from Capybara 💖\n\n▶️ Listen:\n{raw_url}"
+        )
+
+    st.success("Voice note sent 💕")
+
 
 
 # --- TAB 5: MAP OF US ---
