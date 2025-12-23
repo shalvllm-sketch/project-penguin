@@ -312,11 +312,6 @@
 
 
 
-
-
-
-
-
 import streamlit as st
 import random
 import time
@@ -529,37 +524,32 @@ with tab3:
     ]
     
     if st.button("SPIN IT! 🎲", use_container_width=True):
-        items = ["😈", "🍑", "🥔", "🫦", "❤️", "🍆"] # Reduced items to increase natural win rate
+        items = ["😈", "🍑", "🥔", "🫦", "❤️", "🍆"]
         with st.spinner("Spinning..."):
             time.sleep(1)
         
-        # --- THE CHEAT CODE LOGIC ---
-        # 40% Chance to FORCE Roleplay Night
+        # --- THE CHEAT CODE LOGIC (40%) ---
         force_win = False
         if random.random() < 0.40:
             force_win = True
             
         if force_win:
-            # Force the display to look like a win
             a = "😈"
             b = "😈"
-            c = "❤️" # Just slightly off so it triggers the "Mini Win" logic below
+            c = "❤️" 
         else:
-            # Real Random Spin
             a = random.choice(items)
             b = random.choice(items)
             c = random.choice(items)
         
         st.markdown(f"<h1 style='text-align: center; color: black !important;'>{a} | {b} | {c}</h1>", unsafe_allow_html=True)
         
-        # LOGIC
         if a == b == c:
             st.balloons()
             prize = "🧞‍♂️ JACKPOT: I do ANYTHING you say today."
             st.success(f"{prize}")
             
         elif force_win:
-             # If we triggered the cheat code, we force this specific message
              st.info("Lucky Spin! 🥈")
              st.success("🤫 Reward: Roleplay Night (You choose the script)")
              st.caption("Valid for 24 hours!")
@@ -583,40 +573,43 @@ with tab4:
         st.video("https://www.youtube.com/watch?v=f9PKHVesfDc")
         send_notification(f"🚨 Capybara Alert! {reason}: {details}")
 
-# --- TAB 5: MAP OF US (FIXED) ---
+# --- TAB 5: MAP OF US (FIXED WHITE TEXT) ---
 with tab5:
     st.markdown("### 📍 Where it all started")
     
-    # 1. Define Data
+    # 1. Define Data with UPDATED LABELS
     map_data = pd.DataFrame({
         'lat': [28.4026, 28.4108],
         'lon': [77.0673, 77.0380],
-        'label': ['First Date (M3M)', 'First Kiss (Sec 48)'],
-        'color': [[255, 0, 128, 200], [255, 0, 0, 200]] # Pink and Red
+        'label': [
+            'First Date: Trippy Tequila M3M IFC; Where I realized I like you', 
+            'First Kiss: Parking of Vega Schools; Where I realized I love you'
+        ],
+        'color': [[255, 0, 128, 200], [255, 0, 0, 200]]
     })
     
     # 2. Define Layers
-    # Layer A: Scatterplot (The Big Red Dots) - VISIBLE
+    # Layer A: Scatterplot (The Big Red Dots)
     scatter_layer = pdk.Layer(
         "ScatterplotLayer",
         map_data,
         get_position='[lon, lat]',
         get_color='color',
-        get_radius=200, # 200 meters wide
+        get_radius=200,
         pickable=True,
     )
     
-    # Layer B: Text (The Labels)
+    # Layer B: Text (The Labels) - NOW WHITE
     text_layer = pdk.Layer(
         "TextLayer",
         map_data,
         get_position='[lon, lat]',
         get_text='label',
-        get_size=20,
-        get_color=[0, 0, 0, 255], # Black text
+        get_size=15, # Slightly smaller for long text
+        get_color=[255, 255, 255, 255], # PURE WHITE TEXT
         get_angle=0,
         get_text_anchor='"middle"',
-        get_alignment_baseline='"bottom"'
+        get_alignment_baseline='"top"'
     )
     
     # 3. View State
@@ -629,10 +622,11 @@ with tab5:
     
     # 4. Render
     st.pydeck_chart(pdk.Deck(
+        map_style="mapbox://styles/mapbox/dark-v10", # Dark map style for contrast
         layers=[scatter_layer, text_layer],
         initial_view_state=view_state,
         tooltip={"text": "{label}"}
     ))
     
     st.markdown("---")
-    st.caption("Look for the Big Red/Pink Dots!")
+    st.caption("Look for the Big Red/Pink Dots! (Zoom if needed)")
