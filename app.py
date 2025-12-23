@@ -226,7 +226,7 @@ with tab1:
 # --- TAB 2: STREET FOOD GUIDE ---
 with tab2:
     st.markdown("### 🥟 Street Foodie")
-    st.write("Cheap, Tasty, Near Sector 48 (Under ₹300).")
+    st.write("Tasty and Near Sector 48 (Under ₹300).")
     vibe = st.select_slider("Mood?", options=["Momos 🥟", "Spicy 🌶️", "Cheesy 🧀", "Desi 🥘", "Sweet 🍩"])
     if st.button("Find Snack 🌯", use_container_width=True):
         with st.spinner("Scanning street stalls..."):
