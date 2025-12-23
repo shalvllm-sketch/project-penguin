@@ -50,36 +50,47 @@ def get_ai_love_note():
         return "You are my favorite notification ❤️"
 
 def get_food_suggestion(vibe):
-    if not client: return "Just go to Bhai Ji Shawarma!"
-    
-    # DYNAMIC PROMPT LOGIC
+    if not client: return "Just go to Bhai Ji Shawarma! (AI Offline)"
+
+    # --- 1. CAPYBARA'S TASTE PROFILE ---
+    # We explicitly tell the AI what she loves and hates to guide the suggestion.
+    her_tastes = (
+        "USER PROFILE (CAPYBARA): \n"
+        "- LOVES (Sweet): Cheesecake, Nutella Cheesecake Waffle, Biscoff Waffle (The Belgian Waffle Co).\n"
+        "- HATES (Sweet): Red Velvet (NEVER suggest this).\n"
+        "- LOVES (Savory): 7 Cheese/Mac & Cheese Pizza (La Pino'z), Crispy Paneer Shawarma (Bhai Ji), "
+        "Manchurian & Fried Rice (Hong's Kitchen), Mac & Cheese (Social).\n"
+        "- PREFERENCE: She likes 'Cheesy', 'Crispy', and 'Spicy' textures."
+    )
+
+    # --- 2. DYNAMIC PROMPT LOGIC ---
     if "Sweet" in vibe:
-        category = "DESSERT or SWEET DISH (e.g., Jalebi, Rabri, Ice Cream, Waffles)"
-        constraint = "Strictly NO savory items like Momos, Tikka, or Chaat."
+        category = "DESSERT (Cheesecake, Waffles, Chocolate)"
+        constraint = "Strictly NO savory items. STRICTLY NO RED VELVET. Suggest something indulgent."
     else:
         category = "SAVORY VEGETARIAN street food/snack"
-        constraint = "Ensure it is spicy/savory as requested."
+        constraint = "Ensure it is cheesy, crispy, or spicy. NO sweets."
 
     try:
         prompt_text = (
             f"Suggest 1 specific {category} near Sector 48 Gurgaon (Sohna Road). "
-            f"Cost must be UNDER ₹300. {constraint} "
+            f"Cost must be UNDER ₹400. \n"
+            f"{her_tastes}\n" # <--- Injecting her profile here
+            f"Constraint: {constraint} \n"
             f"Format: 'Dish Name' at 'Restaurant Name' (~Price). "
-            f"Add a witty reason why it fits the '{vibe}' vibe for my girlfriend."
+            f"Add a witty reason why it fits the '{vibe}' vibe."
         )
         
         response = client.chat.completions.create(
             model=deployment_name,
             messages=[
-                {"role": "system", "content": "You are a Gurgaon food guide. You give short, punchy recommendations."},
+                {"role": "system", "content": "You are a Gurgaon food expert who knows my girlfriend's specific taste buds."},
                 {"role": "user", "content": prompt_text}
             ]
         )
         return response.choices[0].message.content
     except:
-        return "Just get a Choco Lava Cake from Domino's. Safe bet."
-
-
+        return "Just get the Nutella Waffle from Belgian Waffle Co. It never fails."
 
 def upload_voice_to_github(audio_bytes, extension):
     filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex}.{extension}"
