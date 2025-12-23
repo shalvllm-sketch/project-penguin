@@ -3,4 +3,3 @@ openai
 requests
 pandas
 pydeck
-streamlit-audio-recorder
