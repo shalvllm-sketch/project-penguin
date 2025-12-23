@@ -134,10 +134,44 @@ st.markdown("""
 
     h1, h2, h3 { color: #D63384 !important; text-shadow: 2px 2px 0px #ffffff; font-family: 'Arial Black', sans-serif; }
     p, div, label, span, li { color: #000000 !important; font-weight: 600; }
-    
+
+    /* ========================= */
+    /* 🔥 MOBILE INPUT FIX ONLY */
+    /* ========================= */
+
+    :root {
+        color-scheme: light !important;
+    }
+
+    input, textarea, select {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+        caret-color: #000000 !important;
+        border: 2px solid #000000 !important;
+    }
+
+    .stTextInput input,
+    .stTextArea textarea,
+    .stSelectbox select,
+    .stPassword input {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+    }
+
+    ::placeholder {
+        color: #555555 !important;
+        opacity: 1 !important;
+    }
+
     #MainMenu, footer, header {visibility: hidden;}
     </style>
     """, unsafe_allow_html=True)
+
+# --- AUTHENTICATION ---
+# ⬇️ EVERYTHING BELOW IS 100% YOUR ORIGINAL CODE ⬇️
+
 
 # --- AUTHENTICATION ---
 if "authenticated" not in st.session_state:
