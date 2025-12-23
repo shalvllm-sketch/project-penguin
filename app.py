@@ -45,7 +45,7 @@ def get_food_suggestion(vibe):
     if not client: return "Order Domino's! (AI Offline)"
     try:
         # UPDATED PROMPT: Sector 48 Vicinity
-        prompt_text = f"Suggest 1 specific VEGETARIAN dish from a REAL restaurant near Sector 48 Gurgaon (within 45 mins drive). Cost must be UNDER ₹500. Format: 'Dish Name' at 'Restaurant Name' (~Price). Add a short witty reason why it fits the '{vibe}' vibe."
+        prompt_text = f"Suggest 1 specific VEGETARIAN dish from a REAL restaurant near Sector 48 Gurgaon (within 45 mins drive). Cost must be UNDER ₹300. Format: 'Dish Name' at 'Restaurant Name' (~Price). Add a short witty reason why it fits the '{vibe}' vibe."
         
         response = client.chat.completions.create(
             model=deployment_name,
