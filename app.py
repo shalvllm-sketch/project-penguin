@@ -126,23 +126,36 @@ def upload_voice_to_github(audio_bytes, extension):
 def get_movie_suggestion(mood, platform, language):
     if not client: return "Watch 'Fifty Shades' or '365 Days' (AI Offline)"
     
-    # Handle specific "Spicy" mood context
+    # 1. MOOD LOGIC
     if "Sexy" in mood or "Spicy" in mood:
         mood_context = "Erotic, Steamy, High-Chemistry Romance, or Sensual Thriller"
     else:
         mood_context = mood
 
-    # Handle Language Context
+    # 2. LANGUAGE LOGIC
     if language == "Any":
         lang_prompt = "Any language (English, Hindi, or Korean preferred)."
     else:
         lang_prompt = f"Strictly in {language} language (or excellent dub)."
 
+    # 3. RANDOM STRATEGY (The Fix for Repetition) 🎲
+    # We pick a random "filter" so the AI doesn't pick the same top movie every time.
+    strategies = [
+        "an underrated hidden gem",
+        "a critically acclaimed masterpiece",
+        "a massive blockbuster hit",
+        "a cult classic",
+        "something released in the last 3 years",
+        "a fan favorite with high IMDB rating"
+    ]
+    selected_strategy = random.choice(strategies)
+
     try:
         prompt_text = (
             f"Suggest 1 specific Movie or Web Series available on {platform} (India Region Library). "
-            f"The mood/genre is: {mood_context}. "
+            f"The mood is: {mood_context}. "
             f"Language Constraint: {lang_prompt}. "
+            f"Selection Strategy: Pick {selected_strategy}. " # <--- Forces variety
             f"We are a couple (Shalv and Capybara). "
             f"Give a 1-sentence plot summary and a 1-sentence cheeky/witty reason why we should watch it."
         )
@@ -150,15 +163,14 @@ def get_movie_suggestion(mood, platform, language):
         response = client.chat.completions.create(
             model=deployment_name,
             messages=[
-                {"role": "system", "content": "You are a movie buff knowing the Indian OTT catalog. You suggest great movies for couples."},
+                {"role": "system", "content": "You are a movie buff knowing the Indian OTT catalog. You suggest diverse movies, not just the most popular ones."},
                 {"role": "user", "content": prompt_text}
-            ]
+            ],
+            temperature=0.9  # <--- Increased randomness (0.0 is repetitive, 1.0 is chaotic)
         )
         return response.choices[0].message.content
     except:
         return "Just watch 'Bridgerton' on Netflix. It hits the spot!"
-        
-
 
 
 # --- CUSTOM CSS ---
