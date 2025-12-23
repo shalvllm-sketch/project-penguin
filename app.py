@@ -7,6 +7,10 @@ import pandas as pd
 import pydeck as pdk
 from datetime import date
 from openai import AzureOpenAI
+import base64
+import uuid
+from datetime import datetime
+
 
 # --- CONFIGURATION ---
 st.set_page_config(page_title="For My Capybara", page_icon="🥔", layout="centered")
@@ -59,6 +63,41 @@ def get_food_suggestion(vibe):
         return response.choices[0].message.content
     except:
         return "Just get Kurkure Momos from Pushkar Raj. Classic."
+
+
+
+
+def upload_voice_to_github(audio_bytes, extension):
+    filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex}.{extension}"
+    path = f"voice/{filename}"
+
+    url = f"https://api.github.com/repos/{st.secrets['GITHUB_REPO']}/contents/{path}"
+
+    payload = {
+        "message": "🎧 New voice note from Capybara",
+        "content": base64.b64encode(audio_bytes).decode("utf-8"),
+        "branch": st.secrets["GITHUB_BRANCH"]
+    }
+
+    headers = {
+        "Authorization": f"token {st.secrets['GITHUB_TOKEN']}",
+        "Accept": "application/vnd.github+json"
+    }
+
+    response = requests.put(url, json=payload, headers=headers)
+
+    if response.status_code not in (200, 201):
+        raise Exception(f"GitHub upload failed: {response.text}")
+
+    raw_url = (
+        f"https://raw.githubusercontent.com/"
+        f"{st.secrets['GITHUB_REPO']}/"
+        f"{st.secrets['GITHUB_BRANCH']}/"
+        f"{path}"
+    )
+
+    return raw_url
+
 
 # --- CUSTOM CSS ---
 st.markdown("""
@@ -352,6 +391,29 @@ with tab4:
         st.warning(f"Message sent. I love you.")
         st.video("https://www.youtube.com/watch?v=f9PKHVesfDc")
         send_notification(f"🚨 Capybara Alert! {reason}: {details}")
+
+
+
+
+
+
+st.markdown("---")
+st.markdown("### 🎙️ Voice Note (Test)")
+
+voice = st.file_uploader(
+    "Upload a short voice note",
+    type=["mp3", "m4a", "wav"]
+)
+
+if voice and st.button("UPLOAD VOICE (TEST)", use_container_width=True):
+    with st.spinner("Uploading your voice..."):
+        ext = voice.name.split(".")[-1]
+        raw_url = upload_voice_to_github(voice.getbuffer(), ext)
+
+    st.success("Uploaded successfully!")
+    st.write("Direct audio link:")
+    st.write(raw_url)
+
 
 # --- TAB 5: MAP OF US ---
 with tab5:
