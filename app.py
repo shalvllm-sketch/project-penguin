@@ -558,7 +558,7 @@ with tab6:
         st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbjVvOWdwZjF2ZXRzaTRsMTB0em8yaXJxcnRwbzVzMmozbzE1enZ2MSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/GYikUbu3p5UdyBhe4r/giphy.gif")
 
     st.markdown("### 🍿 Movie Night Picker")
-    st.write("Can't decide what to watch? Let AI pick.")
+    st.write("Can't decide what to watch? Let my chintu sa bot pick.")
 
     col1, col2 = st.columns(2)
     with col1:
