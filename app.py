@@ -6,7 +6,6 @@ from datetime import date
 st.set_page_config(page_title="For My Penguin", page_icon="❤️", layout="centered")
 
 # --- AUTHENTICATION ---
-# Simple password protection
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
@@ -14,25 +13,25 @@ if not st.session_state.authenticated:
     st.title("Login ❤️")
     password = st.text_input("Enter the magic word:", type="password")
     if st.button("Enter"):
-        if password == "penguin123":  # <--- CHANGE THIS PASSWORD IF YOU WANT
+        if password == "penguin123": 
             st.session_state.authenticated = True
             st.rerun()
         elif password:
             st.error("Wrong password! Are you really her? 🤨")
-    st.stop() # Stops the rest of the app from loading if not logged in
+    st.stop() 
 
-# --- APP LOGIC (Only runs if logged in) ---
+# --- APP LOGIC ---
 st.title("Hey Baby ❤️")
 
 # Create Tabs
 tab1, tab2, tab3 = st.tabs(["🏠 Us", "🍔 Food", "💌 Vent"])
 
-# --- TAB 1: RELATIONSHIP STATS ---
+# --- TAB 1: RELATIONSHIP STATS & JUKEBOX ---
 with tab1:
     st.header("Our Stats")
     
-    # EDIT THIS DATE: Format is (Year, Month, Day)
-    start_date = date(2024, 9, 7) 
+    # DATE CONFIGURATION
+    start_date = date(2024, 9, 9) 
     today = date.today()
     delta = today - start_date
     
@@ -40,7 +39,26 @@ with tab1:
     col1.metric("Days Together", f"{delta.days}")
     col2.metric("Hours (Approx)", f"{delta.days * 24}")
     
-    st.write("---")
+    st.divider()
+    
+    # --- NEW: JUKEBOX FEATURE ---
+    st.subheader("Our Jukebox 🎵")
+    
+    # The Playlist
+    songs = {
+        "Mere Bina (Crook)": "https://www.youtube.com/watch?v=f9PKHVesfDc",
+        "I Wanna Be Yours (Arctic Monkeys)": "https://www.youtube.com/watch?v=nyuo9-OjNNg",
+        "Die For You (The Weeknd)": "https://www.youtube.com/watch?v=2AH5l-vrY9Q",
+        "Take Me to the River (I Will Swim)": "https://www.youtube.com/watch?v=6ar2VHW1i2w" 
+    }
+    
+    # Dropdown menu
+    selected_song = st.selectbox("Pick a Vibe:", list(songs.keys()))
+    
+    # Play the song
+    st.video(songs[selected_song])
+    
+    st.divider()
     st.subheader("Your Daily Reminder:")
     compliments = [
         "You look beautiful today.",
@@ -53,7 +71,6 @@ with tab1:
 # --- TAB 2: DECISION HELPER ---
 with tab2:
     st.header("What should we eat?")
-    # EDIT THESE OPTIONS
     food_options = ["Pizza", "Sushi", "Burgers", "North Indian", "Chinese", "Maggi"]
     
     if st.button("Pick Dinner For Us"):
@@ -70,7 +87,9 @@ with tab3:
     
     if mood == "Sad":
         st.warning("I'm sorry baby. Remember I'm just a call away.")
-        st.image("https://media.giphy.com/media/3oEdv4hwWTzBhWvaU0/giphy.gif") # Hug GIF
+        st.write("Listening to this usually helps you...")
+        # Auto-plays "Mere Bina" when she is sad
+        st.video("https://www.youtube.com/watch?v=f9PKHVesfDc")
         
     elif mood == "Angry":
         st.error("Take a deep breath. Tell me who I need to fight.")
