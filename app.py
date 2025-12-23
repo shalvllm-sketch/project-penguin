@@ -51,20 +51,33 @@ def get_ai_love_note():
 
 def get_food_suggestion(vibe):
     if not client: return "Just go to Bhai Ji Shawarma!"
+    
+    # DYNAMIC PROMPT LOGIC
+    if "Sweet" in vibe:
+        category = "DESSERT or SWEET DISH (e.g., Jalebi, Rabri, Ice Cream, Waffles)"
+        constraint = "Strictly NO savory items like Momos, Tikka, or Chaat."
+    else:
+        category = "SAVORY VEGETARIAN street food/snack"
+        constraint = "Ensure it is spicy/savory as requested."
+
     try:
-        prompt_text = f"Suggest 1 specific VEGETARIAN street food/snack dish near Sector 48 Gurgaon (Sohna Road). Cost must be UNDER ₹300. Think places like 'Bhai Ji Shawarma', 'Pushkar Raj Momos', 'Civil Lines'. Format: 'Dish Name' at 'Restaurant Name' (~Price). Add a witty reason why it fits the '{vibe}' vibe."
+        prompt_text = (
+            f"Suggest 1 specific {category} near Sector 48 Gurgaon (Sohna Road). "
+            f"Cost must be UNDER ₹300. {constraint} "
+            f"Format: 'Dish Name' at 'Restaurant Name' (~Price). "
+            f"Add a witty reason why it fits the '{vibe}' vibe for my girlfriend."
+        )
         
         response = client.chat.completions.create(
             model=deployment_name,
             messages=[
-                {"role": "system", "content": "You are a Gurgaon street food expert. You know the best budget spots."},
+                {"role": "system", "content": "You are a Gurgaon food guide. You give short, punchy recommendations."},
                 {"role": "user", "content": prompt_text}
             ]
         )
         return response.choices[0].message.content
     except:
-        return "Just get Kurkure Momos from Pushkar Raj. Classic."
-
+        return "Just get a Choco Lava Cake from Domino's. Safe bet."
 
 
 
@@ -99,7 +112,33 @@ def upload_voice_to_github(audio_bytes, extension):
 
     return raw_url
 
+def get_movie_suggestion(mood, platform):
+    if not client: return "Watch 'Fifty Shades' or '365 Days' (AI Offline)"
+    
+    # Handle specific "Spicy" mood context for better results
+    if "Sexy" in mood or "Spicy" in mood:
+        mood_context = "Erotic, Steamy, High-Chemistry Romance, or Sensual Thriller"
+    else:
+        mood_context = mood
 
+    try:
+        prompt_text = (
+            f"Suggest 1 specific Movie or Web Series available on {platform} (India Region Library). "
+            f"The mood/genre is: {mood_context}. "
+            f"We are a couple (Shalv and Capybara). "
+            f"Give a 1-sentence plot summary and a 1-sentence cheeky/witty reason why it fits the mood."
+        )
+        
+        response = client.chat.completions.create(
+            model=deployment_name,
+            messages=[
+                {"role": "system", "content": "You are a movie buff knowing the Indian OTT catalog. You suggest great movies for couples."},
+                {"role": "user", "content": prompt_text}
+            ]
+        )
+        return response.choices[0].message.content
+    except:
+        return "Just watch 'Bridgerton' on Netflix. It hits the spot!"
 # --- CUSTOM CSS ---
 st.markdown("""
     <style>
@@ -259,7 +298,8 @@ if "voice_draft" not in st.session_state:
 
 st.markdown('<p class="title-text">My Capybara ❤️</p>', unsafe_allow_html=True)
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏠 Us", "🍽️ Food", "🎰 Play", "💌 Vent", "📍 Map"])
+# UPDATE THIS LINE
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["🏠 Us", "🍽️ Food", "🎰 Play", "💌 Vent", "📍 Map", "🎬 Watch"])
 
 # --- TAB 1: DASHBOARD ---
 with tab1:
@@ -505,3 +545,42 @@ with tab5:
         <p style='color: red; margin:0; font-size: 16px;'>🔴 <b>First Kiss:</b> Parking of Vega Schools; Where I realized I love you</p>
     </div>
     """, unsafe_allow_html=True)
+
+
+
+
+# --- TAB 6: MOVIE SUGGESTER ---
+# --- TAB 6: MOVIE SUGGESTER ---
+with tab6:
+    c1, c2, c3 = st.columns([1,2,1])
+    with c2:
+        # Cute GIF of people watching TV
+        st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbjVvOWdwZjF2ZXRzaTRsMTB0em8yaXJxcnRwbzVzMmozbzE1enZ2MSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/GYikUbu3p5UdyBhe4r/giphy.gif")
+
+    st.markdown("### 🍿 Movie Night Picker")
+    st.write("Can't decide what to watch? Let AI pick.")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        mood = st.selectbox("Current Mood", [
+            "Romantic 🥰", 
+            "Spicy/Sexy 🌶️",   # <--- Added this as requested
+            "Comedy 😂", 
+            "Thriller/Mystery 🕵️‍♀️", 
+            "Horror 👻", 
+            "Feel Good ✨", 
+            "Cry my eyes out 😭"
+        ])
+    with col2:
+        platform = st.selectbox("Platform", [
+            "Netflix", "Amazon Prime", "Hotstar", "Any"
+        ])
+
+    if st.button("Recommend Something 🎞️", use_container_width=True):
+        with st.spinner("Checking Indian libraries..."): # Updated spinner text
+            suggestion = get_movie_suggestion(mood, platform)
+            st.success(suggestion)
+            
+            # Special effects for romantic/spicy moods
+            if "Romantic" in mood or "Sexy" in mood:
+                st.balloons()
