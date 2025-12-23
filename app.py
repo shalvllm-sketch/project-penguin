@@ -260,7 +260,7 @@ with tab1:
         "Mere Bina (Crook)": "https://www.youtube.com/watch?v=f9PKHVesfDc",
         "I Wanna Be Yours (AM)": "https://www.youtube.com/watch?v=nyuo9-OjNNg",
         "Die For You (Weeknd)": "https://www.youtube.com/watch?v=2AH5l-vrY9Q",
-        "Take Me to the River": "https://www.youtube.com/watch?v=6ar2VHW1i2w" 
+        "Take Me to the River": "https://www.youtube.com/watch?v=uEKVZQCEBUc" 
     }
     selected_song = st.selectbox("Vibe Check:", list(songs.keys()))
     st.video(songs[selected_song])
