@@ -221,7 +221,7 @@ with tab2:
         st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdG5iOXFsdTFyYjMxaXZrMTA0Y2t6amdpN3d2aHdldWUzbTl2MTF1cyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/QKSXTlCRK0r1N2NnkV/giphy.gif")
         
     st.markdown("### 🥟 Street Foodie")
-    st.write("Cheap, Tasty, Near Sector 48 (Under ₹300).")
+    st.write("Tasty and Near Sector 48 (Under ₹300).")
     vibe = st.select_slider("Mood?", options=["Momos 🥟", "Spicy 🌶️", "Cheesy 🧀", "Desi 🥘", "Sweet 🍩"])
     if st.button("Find Snack 🌯", use_container_width=True):
         with st.spinner("Scanning street stalls..."):
