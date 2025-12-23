@@ -165,7 +165,7 @@ st.markdown('<p class="title-text">My Capybara ❤️</p>', unsafe_allow_html=Tr
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏠 Us", "🍽️ Food", "🎰 Play", "💌 Vent", "📍 Map"])
 
-# --- TAB 1: DASHBOARD (NO GIF AS REQUESTED) ---
+# --- TAB 1: DASHBOARD ---
 with tab1:
     st.markdown("### 💑 Our Timeline")
     start_date = date(2024, 9, 7) 
@@ -208,12 +208,12 @@ with tab1:
     selected_song = st.selectbox("Vibe Check:", list(songs.keys()))
     st.video(songs[selected_song])
 
-# --- TAB 2: STREET FOOD GUIDE (EATING GIF) ---
+# --- TAB 2: STREET FOOD GUIDE ---
 with tab2:
-    # GIF: Capybara Eating
+    # GIF: Capybara Eating Watermelon (Tenor Link)
     c1, c2, c3 = st.columns([1,2,1])
     with c2:
-        st.image("https://media.giphy.com/media/s2uwm5bEaB7wY/giphy.gif")
+        st.image("https://media1.tenor.com/m/6bFq_jG3kXEAAAAC/capybara-eating.gif")
         
     st.markdown("### 🥟 Street Foodie")
     st.write("Cheap, Tasty, Near Sector 48 (Under ₹300).")
@@ -223,12 +223,12 @@ with tab2:
             suggestion = get_food_suggestion(vibe)
             st.success(suggestion)
 
-# --- TAB 3: SPICY SLOTS (FUN GIF) ---
+# --- TAB 3: SPICY SLOTS ---
 with tab3:
-    # GIF: Capybara in Hot Spring/Relaxing
+    # GIF: Capybara in Hot Bath (Tenor Link)
     c1, c2, c3 = st.columns([1,2,1])
     with c2:
-        st.image("https://media.giphy.com/media/13CoXDiaCcCoyk/giphy.gif")
+        st.image("https://media1.tenor.com/m/NqK9i4-m1O0AAAAC/capybara-hot-bath.gif")
         
     st.markdown("### 🎰 Naughty Slots")
     st.write("Spin to unlock a reward. (18+)")
@@ -281,9 +281,9 @@ with tab3:
             st.error("No Match! 😢 But I still love you.")
             st.write("Spin again baby.")
 
-# --- TAB 4: VENT (ORIGINAL COMFORT GIF) ---
+# --- TAB 4: VENT ---
 with tab4:
-    # GIF: The Original Cute One
+    # GIF: Original Capybara with Orange
     c1, c2, c3 = st.columns([1,2,1])
     with c2:
         st.image("https://media.giphy.com/media/Q8OPrlvICzjajupr2T/giphy.gif")
@@ -296,12 +296,12 @@ with tab4:
         st.video("https://www.youtube.com/watch?v=f9PKHVesfDc")
         send_notification(f"🚨 Capybara Alert! {reason}: {details}")
 
-# --- TAB 5: MAP OF US (WALKING GIF) ---
+# --- TAB 5: MAP OF US ---
 with tab5:
-    # GIF: Capybara Walking/Travel
+    # GIF: Capybara Walking (Tenor Link)
     c1, c2, c3 = st.columns([1,2,1])
     with c2:
-        st.image("https://media.giphy.com/media/tOTE134kkwGXl44tH3/giphy.gif")
+        st.image("https://media1.tenor.com/m/7yDRk7JjFpYAAAAC/capybara-walking.gif")
 
     st.markdown("### 📍 Where it all started")
     
