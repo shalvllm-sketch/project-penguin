@@ -10,7 +10,6 @@ from openai import AzureOpenAI
 import base64
 import uuid
 from datetime import datetime
-from streamlit_audio_recorder import audio_recorder
 
 
 
@@ -400,17 +399,11 @@ with tab4:
 st.markdown("---")
 st.markdown("### 🎙️ Send a Voice Note")
 
-audio_bytes = audio_recorder(
-    text="Tap to record",
-    recording_color="#e74c3c",
-    neutral_color="#2ecc71",
-    icon_name="microphone",
-    icon_size="3x"
-)
+audio_file = st.audio_input("Hold to record")
 
-if audio_bytes:
+if audio_file:
     with st.spinner("Sending your voice..."):
-        raw_url = upload_voice_to_github(audio_bytes, "wav")
+        raw_url = upload_voice_to_github(audio_file.getvalue(), "wav")
 
         send_notification(
             f"🎧 New voice note from Capybara 💖\n\n▶️ Listen:\n{raw_url}"
