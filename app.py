@@ -708,7 +708,6 @@ from datetime import date, datetime
 from openai import AzureOpenAI
 import base64
 import uuid
-from youtube_search import YoutubeSearch
 
 # --- CONFIGURATION ---
 st.set_page_config(page_title="Merry Christmas Capybara", page_icon="🎄", layout="centered")
@@ -725,6 +724,7 @@ except:
     client = None
 
 # --- HELPER FUNCTIONS ---
+
 def send_notification(message):
     try:
         requests.post("https://ntfy.sh/shalv_penguin_alert", 
@@ -749,7 +749,7 @@ def get_ai_love_note():
 def get_food_suggestion(vibe):
     if not client: return "Hot Chocolate at Starbucks! (AI Offline)"
 
-    # --- 1. CAPYBARA'S TASTE PROFILE ---
+    # --- CAPYBARA'S TASTE PROFILE ---
     her_tastes = (
         "USER PROFILE (CAPYBARA): \n"
         "- LOVES: Cheesecake, Nutella Waffles, Hot Chocolate, Cheese, Crispy textures.\n"
@@ -776,21 +776,61 @@ def get_food_suggestion(vibe):
     except:
         return "Get the Dark Hot Chocolate from Paul's or Colocal. It's a hug in a mug!"
 
-def get_movie_suggestion(mood, platform):
+def upload_voice_to_github(audio_bytes, extension):
+    """
+    Restored your original GitHub upload logic
+    """
+    filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex}.{extension}"
+    path = f"voice/{filename}"
+
+    url = f"https://api.github.com/repos/{st.secrets['GITHUB_REPO']}/contents/{path}"
+
+    payload = {
+        "message": "🎧 New voice note from Capybara (Xmas Edition)",
+        "content": base64.b64encode(audio_bytes).decode("utf-8"),
+        "branch": st.secrets["GITHUB_BRANCH"]
+    }
+
+    headers = {
+        "Authorization": f"token {st.secrets['GITHUB_TOKEN']}",
+        "Accept": "application/vnd.github+json"
+    }
+
+    response = requests.put(url, json=payload, headers=headers)
+
+    if response.status_code not in (200, 201):
+        raise Exception(f"GitHub upload failed: {response.text}")
+
+    raw_url = (
+        f"https://raw.githubusercontent.com/"
+        f"{st.secrets['GITHUB_REPO']}/"
+        f"{st.secrets['GITHUB_BRANCH']}/"
+        f"{path}"
+    )
+
+    return raw_url
+
+def get_movie_suggestion(mood, platform, language):
     if not client: return "Watch 'Home Alone' or 'The Holiday' (AI Offline)"
     
+    # Logic to handle Christmas vibes
+    if "Christmas" in mood:
+        mood_context = "Festive, Cozy, Holiday Spirit, Maybe a bit cheesy"
+    else:
+        mood_context = mood
+
     try:
         prompt_text = (
-            f"Suggest 1 specific Movie on {platform} (India). "
-            f"Mood: {mood}. It MUST be perfect for a couple watching on Christmas Eve/Day. "
-            f"Prefer: Rom-Coms, Cozy vibes, or Harry Potter style magic. "
+            f"Suggest 1 specific Movie on {platform} (India Library). "
+            f"Mood: {mood_context}. Language: {language}. "
+            f"It MUST be perfect for a couple watching during the holidays. "
             f"Give a 1-sentence cheeky reason why we should cuddle and watch it."
         )
         
         response = client.chat.completions.create(
             model=deployment_name,
             messages=[
-                {"role": "system", "content": "You are a movie buff suggesting Christmas movies for a couple."},
+                {"role": "system", "content": "You are a movie buff suggesting movies for a couple."},
                 {"role": "user", "content": prompt_text}
             ],
             temperature=0.9 
@@ -799,12 +839,40 @@ def get_movie_suggestion(mood, platform):
     except:
         return "Just watch 'Love Actually' on Netflix. It's tradition!"
 
-# --- CUSTOM CSS (CHRISTMAS THEME) ---
+def youtube_search(query, limit=5):
+    """
+    Restored your original ROBUST search with multiple instances
+    """
+    instances = [
+        "https://inv.tux.pizza",
+        "https://vid.puffyan.us", 
+        "https://yewtu.be",
+        "https://invidious.drgns.space"
+    ]
+    
+    params = {"q": query, "type": "video"}
+    
+    for instance in instances:
+        url = f"{instance}/api/v1/search"
+        try:
+            # 6-second timeout to prevent hanging
+            r = requests.get(url, params=params, timeout=6)
+            
+            if r.status_code == 200:
+                data = r.json()
+                if isinstance(data, list) and len(data) > 0:
+                    return data[:limit]
+        except Exception as e:
+            continue # Try the next server
+            
+    return []
+
+# --- CUSTOM CSS (CHRISTMAS + MOBILE FIXES) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Quicksand:wght@500;700&display=swap');
 
-    /* SNOWFALL ANIMATION */
+    /* --- SNOWFALL ANIMATION --- */
     .snowflake {
         color: #fff;
         font-size: 1em;
@@ -814,8 +882,6 @@ st.markdown("""
         top: -10%;
         z-index: 9999;
         -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
         user-select: none;
         cursor: default;
         animation-name: snowflakes-fall, snowflakes-shake;
@@ -823,6 +889,7 @@ st.markdown("""
         animation-timing-function: linear, ease-in-out;
         animation-iteration-count: infinite, infinite;
         animation-play-state: running, running;
+        pointer-events: none;
     }
     @keyframes snowflakes-fall {
         0% {top: -10%;}
@@ -832,7 +899,6 @@ st.markdown("""
         0%, 100% {transform: translateX(0);}
         50% {transform: translateX(80px);}
     }
-    /* Generating random snow positions */
     .snowflake:nth-of-type(0) {left: 1%; animation-delay: 0s, 0s;}
     .snowflake:nth-of-type(1) {left: 10%; animation-delay: 1s, 1s;}
     .snowflake:nth-of-type(2) {left: 20%; animation-delay: 6s, .5s;}
@@ -840,13 +906,9 @@ st.markdown("""
     .snowflake:nth-of-type(4) {left: 40%; animation-delay: 2s, 2s;}
     .snowflake:nth-of-type(5) {left: 50%; animation-delay: 8s, 3s;}
     .snowflake:nth-of-type(6) {left: 60%; animation-delay: 6s, 2s;}
-    .snowflake:nth-of-type(7) {left: 70%; animation-delay: 2.5s, 1s;}
-    .snowflake:nth-of-type(8) {left: 80%; animation-delay: 1s, 0s;}
-    .snowflake:nth-of-type(9) {left: 90%; animation-delay: 3s, 1.5s;}
     
-    /* CHRISTMAS BACKGROUND */
+    /* --- CHRISTMAS THEME --- */
     .stApp {
-        /* Deep Red to Green Gradient */
         background: linear-gradient(135deg, #165B33 0%, #0B3822 50%, #BB2528 100%);
         background-attachment: fixed;
     }
@@ -864,6 +926,12 @@ st.markdown("""
         text-align: center;
         text-shadow: 0 0 10px #FF0000, 0 0 20px #00FF00;
         margin-bottom: 10px;
+        animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
     }
     
     /* CARDS/TABS */
@@ -871,43 +939,66 @@ st.markdown("""
         background: rgba(255, 255, 255, 0.95);
         border-radius: 15px;
         padding: 20px;
-        border: 4px solid #BB2528; /* Christmas Red Border */
-        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); /* Gold Glow */
+        border: 4px solid #BB2528;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
     }
     
     /* BUTTONS */
     .stButton > button {
-        background-color: #BB2528 !important; /* Red */
+        background-color: #BB2528 !important;
         color: white !important;
-        border: 2px solid #F8B229 !important; /* Gold */
+        border: 2px solid #F8B229 !important;
         border-radius: 20px;
         font-family: 'Quicksand', sans-serif;
         font-weight: bold;
+        text-transform: uppercase;
+        box-shadow: 0px 5px 0px #8B0000 !important;
+        transition: all 0.2s;
     }
     .stButton > button:hover {
-        background-color: #146B3A !important; /* Green */
-        transform: scale(1.05);
+        background-color: #146B3A !important;
+        transform: translateY(-2px);
+        box-shadow: 0px 7px 0px #004d00 !important;
+    }
+    .stButton > button:active {
+        transform: translateY(2px);
+        box-shadow: 0px 0px 0px #004d00 !important;
     }
 
     p, div, label, span, li { 
-        color: #0B3822 !important; /* Dark Green Text */
+        color: #0B3822 !important; 
         font-family: 'Quicksand', sans-serif;
         font-weight: 600; 
     }
     
-    /* INPUT FIELDS */
+    /* --- MOBILE INPUT FIXES (FROM YOUR ORIGINAL CODE) --- */
+    :root { color-scheme: light !important; }
     input, textarea, select {
+        background-color: #ffffff !important;
+        color: #000000 !important;
         border: 2px solid #146B3A !important;
-        color: #000 !important;
+    }
+    div[data-baseweb="select"] > div {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border-color: #146B3A !important;
+    }
+    div[data-baseweb="popover"], div[data-baseweb="menu"] {
+        background-color: #ffffff !important;
+        border: 2px solid #146B3A !important;
+    }
+    div[data-baseweb="option"] {
+        background-color: #ffffff !important;
+        color: #000000 !important; 
+    }
+    div[data-baseweb="option"]:hover {
+        background-color: #ffe6e6 !important;
+        color: #000000 !important;
     }
     
     #MainMenu, footer, header {visibility: hidden;}
     </style>
     
-    <div class="snowflake">❅</div>
-    <div class="snowflake">❆</div>
-    <div class="snowflake">❅</div>
-    <div class="snowflake">❆</div>
     <div class="snowflake">❅</div>
     <div class="snowflake">❆</div>
     <div class="snowflake">❅</div>
@@ -925,7 +1016,7 @@ if not st.session_state.authenticated:
     st.markdown('<p class="title-text">Ho Ho Ho! 🎅</p>', unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1,2,1])
     with col2:
-        st.info("Santa Shalv has a gift for you.")
+        st.info("Santa Shalv has a locked gift for you.")
         password = st.text_input("Enter Secret Password", type="password", placeholder="Hint: Who are you?")
         if st.button("Unwrap Gift 🎁", use_container_width=True):
             if password.lower() == "capybara": 
@@ -936,6 +1027,9 @@ if not st.session_state.authenticated:
     st.stop() 
 
 # --- MAIN APP ---
+if "voice_draft" not in st.session_state:
+    st.session_state.voice_draft = None
+
 st.markdown('<p class="title-text">Merry Xmas Capybara 🎄</p>', unsafe_allow_html=True)
 
 # TABS
@@ -956,6 +1050,20 @@ with tab1:
     st.success(f"We have been naughty & nice for **{delta.days} Days**! ❄️")
     
     st.markdown("---")
+    
+    st.markdown("### 📸 Memories")
+    photo_dir = "photos"
+    if os.path.exists(photo_dir) and len(os.listdir(photo_dir)) > 0:
+        images = [f for f in os.listdir(photo_dir) if f.endswith(('.png', '.jpg', '.jpeg', '.webp'))]
+        if images:
+            random_image = random.choice(images)
+            st.image(f"{photo_dir}/{random_image}", caption="Us ❤️")
+            if st.button("Next Pic 🔄", use_container_width=True):
+                st.rerun()
+    else:
+        st.info("💡 (Upload photos to GitHub to see them here!)")
+
+    st.markdown("---")
     st.markdown("### 🎅 Santa Shalv says:")
     if "daily_note" not in st.session_state:
         st.session_state.daily_note = get_ai_love_note()  
@@ -966,18 +1074,21 @@ with tab1:
         
     st.markdown("---")
     st.markdown("### 🎵 Christmas Jukebox")
-    query = st.text_input("Play a Christmas carol 🎻", placeholder="All I Want For Christmas...")
+    query = st.text_input("Play a Christmas carol 🎻", placeholder="Song name / Artist / Lyrics")
     
     if query:
-        with st.spinner("Asking the Elves..."):
-            try:
-                results = YoutubeSearch(query, max_results=3).to_dict()
-                if results:
-                    options = {f"{v['title']}": f"https://www.youtube.com/watch?v={v['id']}" for v in results}
-                    selected = st.selectbox("Pick one 🎶", options.keys())
-                    st.video(options[selected])
-            except:
-                st.error("Elves are on break. Try again.")
+        with st.spinner("Asking the Elves (Searching YouTube)..."):
+            # Using the ROBUST custom search function
+            results = youtube_search(query, limit=5)
+            
+            if results:
+                options = {f"{v['title']}": f"https://www.youtube.com/watch?v={v['videoId']}" for v in results}
+                selected = st.selectbox("Pick one 🎶", options.keys())
+                st.video(options[selected])
+            else:
+                st.error("Elves couldn't find it. Try 'Jingle Bell Rock'")
+    else:
+        st.caption("Try: 'Mistletoe Justin Bieber', 'Last Christmas', 'Snowman Sia'")
 
 # --- TAB 2: FESTIVE FOOD ---
 with tab2:
@@ -1009,9 +1120,8 @@ with tab3:
     if st.button("SPIN THE WHEEL 🍭", use_container_width=True):
         items = ["🎅", "🎄", "🎁", "🍪", "😈", "☃️"]
         
-        c1, c2, c3 = st.columns(3)
-        with c1: st.write("...rolling...")
-        time.sleep(1)
+        with st.spinner("Spinning..."):
+            time.sleep(1)
         
         # Biased RNG for Christmas (Higher win rate)
         force_win = random.random() < 0.50
@@ -1023,16 +1133,21 @@ with tab3:
         
         st.markdown(f"<h1 style='text-align: center; color: #BB2528 !important;'>{a} | {b} | {c}</h1>", unsafe_allow_html=True)
         
-        if force_win or a==b or b==c:
+        if force_win:
             st.balloons()
+            st.success("🎅 JACKPOT: You get to pick ANY gift from the list!")
+        elif a == b or b == c or a == c:
+            st.info("Nice! 🥈")
             prize = random.choice(spicy_gifts)
             st.success(f"🎁 YOU WON: **{prize}**")
         else:
             st.warning("Coal for you! 🌑 (Just kidding, spin again baby)")
 
-# --- TAB 4: VENT ---
+# --- TAB 4: VENT & VOICE ---
 with tab4:
     st.markdown("### ❄️ Cold Outside, Warm Inside")
+    
+    # 1. TEXT VENT
     st.write("Vent here. I'm listening.")
     reason = st.selectbox("Topic", ["Christmas Stress", "Miss You", "Cold/Sick", "Just Grumpy"])
     details = st.text_area("Tell Santa Shalv:", placeholder="...")
@@ -1040,6 +1155,41 @@ with tab4:
     if st.button("Send Letter 📨", use_container_width=True):
         st.success("Sent to the North Pole (and my phone). Love you.")
         send_notification(f"🚨 Capybara Vent ({reason}): {details}")
+
+    st.markdown("---")
+    
+    # 2. AUDIO VENT (RESTORED)
+    st.markdown("### 🎙️ Send a Voice Note")
+    audio_file = st.audio_input("Record a message")
+
+    if audio_file:
+        st.session_state.voice_draft = audio_file.getvalue()
+        st.success("Voice recorded. Tap Send when ready 💌")
+
+    if st.session_state.voice_draft:
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if st.button("❌ Discard", use_container_width=True):
+                st.session_state.voice_draft = None
+                st.info("Recording discarded")
+                st.rerun()
+
+        with col2:
+            if st.button("📤 Send Voice", use_container_width=True):
+                with st.spinner("Sending to GitHub..."):
+                    try:
+                        raw_url = upload_voice_to_github(
+                            st.session_state.voice_draft,
+                            "webm" 
+                        )
+                        send_notification(
+                            f"🎧 New Xmas voice note from Capybara 💖\n\n▶️ Listen:\n{raw_url}"
+                        )
+                        st.session_state.voice_draft = None
+                        st.success("Voice note sent 💕")
+                    except Exception as e:
+                        st.error(f"Failed to upload: {e}")
 
 # --- TAB 5: MAP ---
 with tab5:
@@ -1061,22 +1211,38 @@ with tab5:
         pickable=True,
     )
     
+    text_layer = pdk.Layer(
+        "TextLayer",
+        map_data,
+        get_position='[lon, lat]',
+        get_text='label',
+        get_size=15, 
+        get_color=[255, 255, 255, 255], 
+        get_angle=0,
+        get_text_anchor='"middle"',
+        get_alignment_baseline='"top"'
+    )
+    
     view_state = pdk.ViewState(latitude=28.405, longitude=77.055, zoom=13)
-    st.pydeck_chart(pdk.Deck(layers=[scatter_layer], initial_view_state=view_state))
+    st.pydeck_chart(pdk.Deck(layers=[scatter_layer, text_layer], initial_view_state=view_state))
     st.caption("Green: Met | Pink: Date | Red: Kiss")
 
 # --- TAB 6: MOVIE ---
 with tab6:
     st.markdown("### 🎬 Christmas Movie Night")
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
+    
     with col1:
-        mood = st.selectbox("Vibe", ["Romantic 🥰", "Christmas Cheese 🧀", "Harry Potter Magic ⚡", "Comedy 😂"])
+        mood = st.selectbox("Vibe", ["Romantic 🥰", "Christmas Cheese 🧀", "Harry Potter Magic ⚡", "Comedy 😂", "Horror 👻"])
     with col2:
-        platform = st.selectbox("Where?", ["Netflix", "Amazon Prime", "Disney+"])
+        language = st.selectbox("Lang", ["English", "Hindi", "Korean"])
+    with col3:
+        platform = st.selectbox("Where?", ["Netflix", "Amazon Prime", "Disney+", "Any"])
         
     if st.button("Pick for us 🍿", use_container_width=True):
-        rec = get_movie_suggestion(mood, platform)
-        st.success(rec)
+        with st.spinner("Checking Santa's Watchlist..."):
+            rec = get_movie_suggestion(mood, platform, language)
+            st.success(rec)
 
 # --- TAB 7: THE GROUNDBREAKING FEATURE ---
 with tab7:
@@ -1132,7 +1298,8 @@ with tab7:
     # DISPLAY THE CONTENT
     if st.session_state.opened_letter == "miss":
         st.info("💌 **Message:** Remember that I am just one call away. Look at our photos in the 'Us' tab. I love you more than code. Call me right now.")
-        st.audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3") # Replace with your voice note URL
+        # Optional: Add a real voice note URL here if you have one uploaded
+        # st.audio("https://raw.githubusercontent.com/...") 
         
     elif st.session_state.opened_letter == "mad":
         st.warning("💌 **Message:** Okay, I probably messed up. I'm sorry. Take a deep breath. Remember I'm an idiot but I'm *your* idiot. Let's talk it out. 🏳️")
