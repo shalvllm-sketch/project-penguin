@@ -1040,7 +1040,7 @@ with tab1:
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
         # Christmas Couple GIF
-        st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjR6b216czR6b216czR6b216czR6b216czR6b216czR6b216cyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o6fJdYXEWMaCI1pMA/giphy.gif")
+        st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2F0eGZub2pzeHFzcDl6cWQ4d2pmdWZsNTdpZTQxazZubGpscTAzNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/twsX7xsuU2NPyz1bXV/giphy.gif")
 
     st.markdown("### 💑 Our Christmas Timeline")
     start_date = date(2024, 9, 7) 
