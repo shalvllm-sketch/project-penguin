@@ -10,6 +10,7 @@ from openai import AzureOpenAI
 import base64
 import uuid
 from datetime import datetime
+from youtube_search import YoutubeSearch
 
 # --- CONFIGURATION ---
 st.set_page_config(page_title="For My Capybara", page_icon="🥔", layout="centered")
@@ -410,21 +411,27 @@ with tab1:
     )
     
     if query:
-        results = youtube_search(query)
-        if results:
-            options = {
-                f"{v['title']} — {v['author']}": f"https://www.youtube.com/watch?v={v['videoId']}"
-                for v in results
-            }
-            
-            selected = st.selectbox("Pick one 🎶", options.keys())
-            st.video(options[selected])
-        else:
-            st.error("Couldn't find that song 😔 Try another?")
+        with st.spinner("Searching YouTube..."):
+            try:
+                # Returns a list of dictionaries
+                results = YoutubeSearch(query, max_results=5).to_dict()
+                
+                if results:
+                    # Creating the dropdown options
+                    # note: this library uses 'id' instead of 'videoId'
+                    options = {
+                        f"{v['title']} — {v['channel']}": f"https://www.youtube.com/watch?v={v['id']}"
+                        for v in results
+                    }
+                    
+                    selected = st.selectbox("Pick one 🎶", options.keys())
+                    st.video(options[selected])
+                else:
+                    st.error("Couldn't find that song 😔 Try another?")
+            except Exception as e:
+                st.error("Search failed momentarily. Try again!")
     else:
-        st.caption("💡 Try: 'Tum Se Hi', 'Until I Found You', 'Die For You'")
-
-# --- TAB 2: STREET FOOD GUIDE ---
+        st.caption("💡 Try: 'Tum Se Hi', 'Until I Found You', 'Die For You'")# --- TAB 2: STREET FOOD GUIDE ---
 with tab2:
     # GIF: Your Custom FOOD Page GIF
     c1, c2, c3 = st.columns([1,2,1])
