@@ -1117,66 +1117,97 @@ with tab2:
             st.balloons()
 
 # --- TAB 3: NAUGHTY SLOTS (Christmas Ed) ---
-# --- TAB 3: NAUGHTY SLOTS (Rigged & 18+) ---
+# --- TAB 3: NAUGHTY SLOTS (Date Night Edition + Toggle) ---
 with tab3:
-    st.markdown("### 🎰 Naughty or Nice?")
-    st.caption("Warning: 18+ Content Inside 🌶️")
+    st.markdown("### 🎰 Date Night Roulette")
+    st.caption("Rules: Select who is spinning. You MUST do what the card says. 🌶️")
     
-    # THE RIGGED 18+ PRIZE LIST
-    spicy_gifts = [
-        "👅 Reward: Oral Pleasure (I go down on you tonight)",
-        "🚿 Reward: Steamy Shower Sex",
-        "⛓️ Coupon: '50 Shades' Night (Tie me up or I tie you up)",
-        "🐇 Reward: A Quickie (Right here, Right now)",
-        "🧴 Reward: Full Body Oil Massage (Happy Ending included)",
-        "🍑 Reward: Face Sitting Pass (Use anytime)",
-        "🍆 Reward: I take care of you (No reciprocation needed)",
-        "👙 Reward: Strip Tease (I take it ALL off)"
+    # --- THE TOGGLE ---
+    # Centered toggle to pick the player
+    player_turn = st.radio(
+        "Who is spinning?",
+        ["Her Turn 👩", "His Turn 👨"],
+        horizontal=True,
+        label_visibility="collapsed"
+    )
+
+    # THE EXPANDED 18+ POOL (24 Options - Mixed Dynamics)
+    # Format: (Emoji, Category, Task Description)
+    naughty_inventory = [
+        # --- FOREPLAY & TEASE ---
+        ("🧊", "SENSORY", "Ice Play: Run an ice cube all over my body (don't forget the nipples/neck)"),
+        ("🫣", "TEASE", "Blindfold: Put on a blindfold. The other person does whatever they want for 5 mins."),
+        ("👙", "VIEW", "Private Strip Tease: Pick a song and take it ALL off slowly. Maintain eye contact."),
+        ("👅", "ORAL", "Worship: 5 minutes of oral pleasure on the receiver. No penetration allowed yet."),
+        ("🧴", "TOUCH", "Slippery Slope: Full body oil massage (Nude). Happy ending is mandatory."),
+        ("🤫", "DIRTY", "Whisper: Whisper exactly what you want to do to the other person in filthy detail."),
+        
+        # --- THE ACT (POSITIONS & ACTS) ---
+        ("🐕", "ACTION", "Doggy Style: Deep and hard. Hair pulling allowed if consensual."),
+        ("🤠", "ACTION", "Cowgirl / Reverse: Receiver lies down. Spinner gets on top and sets the pace."),
+        ("🥄", "INTIMATE", "The Spoon: Sex on sides. Slow, deep, and intimate. Maximum skin contact."),
+        ("♋", "MUTUAL", "69: Mutual oral pleasure. Race to see who finishes first."),
+        ("🚿", "WET", "Shower Sex: Get the water running. Soap each other up and get to it."),
+        ("🐇", "QUICK", "The Quickie: Pants down, right here, right now. Fast as possible."),
+        ("🪞", "VIEW", "Vanity: Sex in front of a mirror (or camera mode) so we can watch."),
+        
+        # --- SPICY & KINKY ---
+        ("👅", "ORAL", "Face Sitting: One lies down, the other sits on their face. Don't move until tapped out."),
+        ("😈", "DOM", "Yes Sir/Ma'am: For the next hour, the Spinner is the Slave. The other is the Master."),
+        ("👔", "KINK", "Restraint: Use a tie, scarf, or cuffs. Tie the Spinner to the bed."),
+        ("👋", "IMPACT", "Spanking: Bend over. 10 solid spanks. Make them count."),
+        ("🦶", "WORSHIP", "Body Worship: Kiss every inch of the partner's body starting from the feet up."),
+        ("🍆", "ORAL", "Deep Throat / BJ: Take it as deep as possible. Maintain eye contact."),
+        ("🤐", "DENIAL", "Edging: Bring the partner close to finishing, then STOP. Repeat 3 times."),
+        
+        # --- WILDCARDS ---
+        ("🃏", "WILD", "Joker Card: The Spinner chooses ANY position or act they crave right now."),
+        ("🎲", "CHANCE", "Roleplay: We are strangers meeting at a bar. Spinner has to pick the other up."),
+        ("📸", "RISKY", "The Tape: We film ourselves (and delete it immediately after watching)."),
+        ("🤫", "QUIET", "Silent Challenge: We have sex without making a single noise. First to moan loses.")
     ]
     
-    if st.button("SPIN THE WHEEL 🍭", use_container_width=True):
-        # 1. THE RIG: We remove the 'loss' variables. 
-        # It is now mathematically impossible to lose.
+    # Dynamic Button Text based on toggle
+    btn_text = f"SPIN FOR {player_turn.upper()} 🎰"
+    
+    if st.button(btn_text, use_container_width=True):
         
-        with st.spinner("Getting naughty..."):
-            time.sleep(1.5) # Build suspense
+        with st.spinner("Rolling the dice..."):
+            time.sleep(1.0)
         
-        # 2. VISUALS: Only spicy icons
-        winning_combos = [
-            ("😈", "😈", "😈"),
-            ("🍑", "🍑", "🍑"),
-            ("🍆", "🍆", "🍆"),
-            ("👅", "wc", "👅"), # wildcards
-            ("🍒", "🍒", "🍒")
-        ]
+        # 1. RIGGED VISUALS (Always a match)
+        selected_task = random.choice(naughty_inventory)
+        emoji, category, description = selected_task
         
-        # Pick a random winning combo
-        a, b, c = random.choice(winning_combos)
+        # Display the "Jackpot" Reel
+        st.markdown(f"<h1 style='text-align: center; color: #BB2528 !important; font-size: 60px;'>{emoji} | {emoji} | {emoji}</h1>", unsafe_allow_html=True)
         
-        # Display the Slots
-        st.markdown(f"<h1 style='text-align: center; color: #BB2528 !important; font-size: 60px;'>{a} | {b} | {c}</h1>", unsafe_allow_html=True)
-        
-        # 3. THE PAYOUT
+        # 2. THE CARD REVEAL
         st.balloons()
-        prize = random.choice(spicy_gifts)
         
-        # The Result Card
+        # We customize the message slightly based on who is spinning
+        target = "YOU" if "Her" in player_turn else "HIM"
+        
         st.markdown(
             f"""
             <div style="
-                background-color: #ffe6e6; 
-                border: 2px solid #ff0000; 
-                padding: 20px; 
-                border-radius: 10px; 
-                text-align: center;">
-                <h3 style="color: #ff0000 !important; margin: 0;">🎉 JACKPOT 🎉</h3>
-                <h2 style="color: black !important; margin-top: 10px;">{prize}</h2>
-                <p style="font-size: 12px; color: grey;">(Screenshot this to redeem)</p>
+                background-color: #fff0f5; 
+                border: 3px dashed #BB2528; 
+                padding: 25px; 
+                border-radius: 15px; 
+                text-align: center;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                
+                <h4 style="color: #BB2528 !important; letter-spacing: 2px; margin: 0;">TARGET: {player_turn.upper()}</h4>
+                <p style="font-size: 12px; font-weight: bold; color: #555;">CATEGORY: {category}</p>
+                <hr style="border-color: #BB2528;">
+                <h2 style="color: #000 !important; font-family: 'Quicksand', sans-serif; font-size: 22px; margin-top: 15px; line-height: 1.4;">{description}</h2>
+                <br>
+                <p style="font-size: 14px; color: #555;"><i>(No backing out now...)</i></p>
             </div>
             """, 
             unsafe_allow_html=True
         )
-
 # --- TAB 4: VENT & VOICE ---
 with tab4:
     st.markdown("### ❄️ Cold Outside, Warm Inside")
