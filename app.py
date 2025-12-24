@@ -883,32 +883,29 @@ def get_movie_suggestion(mood, platform, language):
         return "Just watch 'Love Actually' on Netflix. It's tradition!"
 
 def youtube_search(query, limit=5):
-    # 1. Updated list of faster Invidious instances
+    # Updated list of servers to try
     instances = [
         "https://invidious.projectsegfau.lt",
         "https://inv.tux.pizza",
-        "https://yewtu.be",
-        "https://invidious.no-logs.com",
-        "https://invidious.io.lol"
+        "https://yewtu.be", 
+        "https://invidious.no-logs.com"
     ]
     
     params = {"q": query, "type": "video"}
     
-    # Try to search real results
     for instance in instances:
         try:
-            url = f"{instance}/api/v1/search"
-            # Short timeout to fail fast and move to the next
-            r = requests.get(url, params=params, timeout=2) 
-            
+            r = requests.get(f"{instance}/api/v1/search", params=params, timeout=2)
             if r.status_code == 200:
                 data = r.json()
                 if isinstance(data, list) and len(data) > 0:
                     return data[:limit]
-        except Exception:
-            continue 
+        except:
+            continue
             
-    # 2. EMERGENCY FALLBACK 
+    return [] # Returns empty so we can show your custom error
+        
+        # 2. EMERGENCY FALLBACK 
     # If search fails, return these hit songs so the app DOES NOT break.
     return [
         {"title": "Mariah Carey - All I Want for Christmas Is You", "videoId": "aAkMkVFwAoo"},
@@ -1209,7 +1206,7 @@ with tab1:
                 selected = st.selectbox("Pick one 🎶", options.keys())
                 st.video(options[selected])
             else:
-                st.error("Elves couldn't find it. Try 'Jingle Bell Rock'")
+                st.error("YouTube servers are down. They're probably also celebrating Christmas! 🎅'")
     else:
         st.caption("Try: 'Mistletoe Justin Bieber', 'Last Christmas', 'Snowman Sia'")
 # --- TAB 2: FESTIVE FOOD ---
