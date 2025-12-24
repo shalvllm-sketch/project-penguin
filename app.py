@@ -1116,14 +1116,12 @@ with tab2:
             st.success(suggestion)
             st.balloons()
 
-# --- TAB 3: NAUGHTY SLOTS (Christmas Ed) ---
-# --- TAB 3: NAUGHTY SLOTS (Date Night Edition + Toggle) ---
+# --- TAB 3: NAUGHTY SLOTS (Fail-Safe Version) ---
 with tab3:
     st.markdown("### 🎰 Date Night Roulette")
     st.caption("Rules: Select who is spinning. You MUST do what the card says. 🌶️")
     
     # --- THE TOGGLE ---
-    # Centered toggle to pick the player
     player_turn = st.radio(
         "Who is spinning?",
         ["Her Turn 👩", "His Turn 👨"],
@@ -1131,8 +1129,7 @@ with tab3:
         label_visibility="collapsed"
     )
 
-    # THE EXPANDED 18+ POOL (24 Options - Mixed Dynamics)
-    # Format: (Emoji, Category, Task Description)
+    # THE EXPANDED 18+ POOL (24 Options)
     naughty_inventory = [
         # --- FOREPLAY & TEASE ---
         ("🧊", "SENSORY", "Ice Play: Run an ice cube all over my body (don't forget the nipples/neck)"),
@@ -1167,7 +1164,6 @@ with tab3:
         ("🤫", "QUIET", "Silent Challenge: We have sex without making a single noise. First to moan loses.")
     ]
     
-    # Dynamic Button Text based on toggle
     btn_text = f"SPIN FOR {player_turn.upper()} 🎰"
     
     if st.button(btn_text, use_container_width=True):
@@ -1175,40 +1171,25 @@ with tab3:
         with st.spinner("Rolling the dice..."):
             time.sleep(1.0)
         
-        # 1. RIGGED VISUALS (Always a match)
+        # 1. RIGGED VISUALS
         selected_task = random.choice(naughty_inventory)
         emoji, category, description = selected_task
         
-        # Display the "Jackpot" Reel
+        # Jackpot Reel
         st.markdown(f"<h1 style='text-align: center; color: #BB2528 !important; font-size: 60px;'>{emoji} | {emoji} | {emoji}</h1>", unsafe_allow_html=True)
-        
-        # 2. THE CARD REVEAL
         st.balloons()
         
-        # We customize the message slightly based on who is spinning
-        target = "YOU" if "Her" in player_turn else "HIM"
-        
-        # --- THIS IS THE CRITICAL FIX: unsafe_allow_html=True ---
-        st.markdown(
-            f"""
-            <div style="
-                background-color: #fff0f5; 
-                border: 3px dashed #BB2528; 
-                padding: 25px; 
-                border-radius: 15px; 
-                text-align: center;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                
-                <h4 style="color: #BB2528 !important; letter-spacing: 2px; margin: 0;">TARGET: {player_turn.upper()}</h4>
-                <p style="font-size: 12px; font-weight: bold; color: #555;">CATEGORY: {category}</p>
-                <hr style="border-color: #BB2528;">
-                <h2 style="color: #000 !important; font-family: 'Quicksand', sans-serif; font-size: 22px; margin-top: 15px; line-height: 1.4;">{description}</h2>
-                <br>
-                <p style="font-size: 14px; color: #555;"><i>(No backing out now...)</i></p>
-            </div>
-            """, 
-            unsafe_allow_html=True
-        )
+        # 2. THE CARD REVEAL (Using Native Streamlit Container)
+        # We use a red container (st.error) to act as the "Naughty Card" background
+        with st.container(border=True):
+            st.markdown(f"#### 🎯 TARGET: {player_turn.upper()}")
+            st.markdown(f"**🔥 CATEGORY:** {category}")
+            st.divider() # Adds a nice line
+            st.markdown(f"## {description}")
+            st.caption("*(No backing out now...)*")
+
+
+
 # --- TAB 4: VENT & VOICE ---
 with tab4:
     st.markdown("### ❄️ Cold Outside, Warm Inside")
