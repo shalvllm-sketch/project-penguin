@@ -1117,9 +1117,14 @@ with tab2:
             st.balloons()
 
 # --- TAB 3: NAUGHTY SLOTS (Fail-Safe Version) ---
+# --- TAB 3: NAUGHTY SLOTS (Rigged: Every 3rd Spin = Face Sitting) ---
 with tab3:
     st.markdown("### 🎰 Date Night Roulette")
     st.caption("Rules: Select who is spinning. You MUST do what the card says. 🌶️")
+    
+    # 1. INITIALIZE THE HIDDEN COUNTER
+    if "spin_count" not in st.session_state:
+        st.session_state.spin_count = 0
     
     # --- THE TOGGLE ---
     player_turn = st.radio(
@@ -1129,17 +1134,14 @@ with tab3:
         label_visibility="collapsed"
     )
 
-    # THE EXPANDED 18+ POOL (24 Options)
+    # THE EXPANDED 18+ POOL
     naughty_inventory = [
-        # --- FOREPLAY & TEASE ---
         ("🧊", "SENSORY", "Ice Play: Run an ice cube all over my body (don't forget the nipples/neck)"),
         ("🫣", "TEASE", "Blindfold: Put on a blindfold. The other person does whatever they want for 5 mins."),
         ("👙", "VIEW", "Private Strip Tease: Pick a song and take it ALL off slowly. Maintain eye contact."),
         ("👅", "ORAL", "Worship: 5 minutes of oral pleasure on the receiver. No penetration allowed yet."),
         ("🧴", "TOUCH", "Slippery Slope: Full body oil massage (Nude). Happy ending is mandatory."),
         ("🤫", "DIRTY", "Whisper: Whisper exactly what you want to do to the other person in filthy detail."),
-        
-        # --- THE ACT (POSITIONS & ACTS) ---
         ("🐕", "ACTION", "Doggy Style: Deep and hard. Hair pulling allowed if consensual."),
         ("🤠", "ACTION", "Cowgirl / Reverse: Receiver lies down. Spinner gets on top and sets the pace."),
         ("🥄", "INTIMATE", "The Spoon: Sex on sides. Slow, deep, and intimate. Maximum skin contact."),
@@ -1147,49 +1149,51 @@ with tab3:
         ("🚿", "WET", "Shower Sex: Get the water running. Soap each other up and get to it."),
         ("🐇", "QUICK", "The Quickie: Pants down, right here, right now. Fast as possible."),
         ("🪞", "VIEW", "Vanity: Sex in front of a mirror (or camera mode) so we can watch."),
-        
-        # --- SPICY & KINKY ---
-        ("👅", "ORAL", "Face Sitting: One lies down, the other sits on their face. Don't move until tapped out."),
         ("😈", "DOM", "Yes Sir/Ma'am: For the next hour, the Spinner is the Slave. The other is the Master."),
         ("👔", "KINK", "Restraint: Use a tie, scarf, or cuffs. Tie the Spinner to the bed."),
         ("👋", "IMPACT", "Spanking: Bend over. 10 solid spanks. Make them count."),
         ("🦶", "WORSHIP", "Body Worship: Kiss every inch of the partner's body starting from the feet up."),
         ("🍆", "ORAL", "Deep Throat / BJ: Take it as deep as possible. Maintain eye contact."),
         ("🤐", "DENIAL", "Edging: Bring the partner close to finishing, then STOP. Repeat 3 times."),
-        
-        # --- WILDCARDS ---
         ("🃏", "WILD", "Joker Card: The Spinner chooses ANY position or act they crave right now."),
         ("🎲", "CHANCE", "Roleplay: We are strangers meeting at a bar. Spinner has to pick the other up."),
         ("📸", "RISKY", "The Tape: We film ourselves (and delete it immediately after watching)."),
         ("🤫", "QUIET", "Silent Challenge: We have sex without making a single noise. First to moan loses.")
     ]
     
+    # THE RIGGED ITEM (Stored separately to force it)
+    face_sitting_task = ("👅", "ORAL", "Face Sitting: One lies down, the other sits on their face. Don't move until tapped out.")
+    
     btn_text = f"SPIN FOR {player_turn.upper()} 🎰"
     
     if st.button(btn_text, use_container_width=True):
         
+        # Increment the counter
+        st.session_state.spin_count += 1
+        
         with st.spinner("Rolling the dice..."):
             time.sleep(1.0)
         
-        # 1. RIGGED VISUALS
-        selected_task = random.choice(naughty_inventory)
+        # --- THE RIGGING LOGIC ---
+        # If the count is 3, 6, 9, 12... Force Face Sitting
+        if st.session_state.spin_count % 3 == 0:
+            selected_task = face_sitting_task
+        else:
+            selected_task = random.choice(naughty_inventory)
+            
         emoji, category, description = selected_task
         
         # Jackpot Reel
         st.markdown(f"<h1 style='text-align: center; color: #BB2528 !important; font-size: 60px;'>{emoji} | {emoji} | {emoji}</h1>", unsafe_allow_html=True)
         st.balloons()
         
-        # 2. THE CARD REVEAL (Using Native Streamlit Container)
-        # We use a red container (st.error) to act as the "Naughty Card" background
+        # THE CARD REVEAL (Fail-Safe Version)
         with st.container(border=True):
             st.markdown(f"#### 🎯 TARGET: {player_turn.upper()}")
             st.markdown(f"**🔥 CATEGORY:** {category}")
-            st.divider() # Adds a nice line
+            st.divider() 
             st.markdown(f"## {description}")
             st.caption("*(No backing out now...)*")
-
-
-
 # --- TAB 4: VENT & VOICE ---
 with tab4:
     st.markdown("### ❄️ Cold Outside, Warm Inside")
