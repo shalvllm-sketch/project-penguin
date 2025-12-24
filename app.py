@@ -1,3 +1,702 @@
+# import streamlit as st
+# import random
+# import time
+# import requests
+# import os
+# import pandas as pd
+# import pydeck as pdk
+# from datetime import date
+# from openai import AzureOpenAI
+# import base64
+# import uuid
+# from datetime import datetime
+# from youtube_search import YoutubeSearch
+
+# # --- CONFIGURATION ---
+# st.set_page_config(page_title="For My Capybara", page_icon="🥔", layout="centered")
+
+# # --- AI SETUP ---
+# try:
+#     client = AzureOpenAI(
+#         api_key=st.secrets["AZURE_OPENAI_API_KEY"],
+#         api_version=st.secrets["AZURE_OPENAI_VERSION"],
+#         azure_endpoint=st.secrets["AZURE_OPENAI_ENDPOINT"]
+#     )
+#     deployment_name = st.secrets["AZURE_DEPLOYMENT_NAME"]
+# except:
+#     client = None
+
+# # --- HELPER FUNCTIONS ---
+# def send_notification(message):
+#     try:
+#         requests.post("https://ntfy.sh/shalv_penguin_alert", 
+#                       data=message.encode(encoding='utf-8'))
+#     except:
+#         pass
+
+# def get_ai_love_note():
+#     if not client: return "I love you more than code! (AI Offline)"
+#     try:
+#         response = client.chat.completions.create(
+#             model=deployment_name,
+#             messages=[
+#                 {"role": "system", "content": "You are a romantic boyfriend named Shalv. Write a 1-sentence witty, cute love note for your girlfriend 'Capybara'. Use emojis."},
+#                 {"role": "user", "content": "Write a note for today."}
+#             ]
+#         )
+#         return response.choices[0].message.content
+#     except:
+#         return "You are my favorite notification ❤️"
+
+# def get_food_suggestion(vibe):
+#     if not client: return "Just go to Bhai Ji Shawarma! (AI Offline)"
+
+#     # --- 1. CAPYBARA'S TASTE PROFILE ---
+#     # We explicitly tell the AI what she loves and hates to guide the suggestion.
+#     her_tastes = (
+#         "USER PROFILE (CAPYBARA): \n"
+#         "- LOVES (Sweet): Cheesecake, Nutella Cheesecake Waffle, Biscoff Waffle (The Belgian Waffle Co).\n"
+#         "- HATES (Sweet): Red Velvet (NEVER suggest this).\n"
+#         "- LOVES (Savory): 7 Cheese/Mac & Cheese Pizza (La Pino'z), Crispy Paneer Shawarma (Bhai Ji), "
+#         "Manchurian & Fried Rice (Hong's Kitchen), Mac & Cheese (Social).\n"
+#         "- PREFERENCE: She likes 'Cheesy', 'Crispy', and 'Spicy' textures."
+#     )
+
+#     # --- 2. DYNAMIC PROMPT LOGIC ---
+#     if "Sweet" in vibe:
+#         category = "DESSERT (Cheesecake, Waffles, Chocolate)"
+#         constraint = "Strictly NO savory items. STRICTLY NO RED VELVET. Suggest something indulgent."
+#     else:
+#         category = "SAVORY VEGETARIAN street food/snack"
+#         constraint = "Ensure it is cheesy, crispy, or spicy. NO sweets."
+
+#     try:
+#         prompt_text = (
+#             f"Suggest 1 specific {category} near Sector 48 Gurgaon (Sohna Road). "
+#             f"Cost must be UNDER ₹400. \n"
+#             f"{her_tastes}\n" # <--- Injecting her profile here
+#             f"Constraint: {constraint} \n"
+#             f"Format: 'Dish Name' at 'Restaurant Name' (~Price). "
+#             f"Add a witty reason why it fits the '{vibe}' vibe."
+#         )
+        
+#         response = client.chat.completions.create(
+#             model=deployment_name,
+#             messages=[
+#                 {"role": "system", "content": "You are a Gurgaon food expert who knows my girlfriend's specific taste buds."},
+#                 {"role": "user", "content": prompt_text}
+#             ]
+#         )
+#         return response.choices[0].message.content
+#     except:
+#         return "Just get the Nutella Waffle from Belgian Waffle Co. It never fails."
+
+# def upload_voice_to_github(audio_bytes, extension):
+#     filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex}.{extension}"
+#     path = f"voice/{filename}"
+
+#     url = f"https://api.github.com/repos/{st.secrets['GITHUB_REPO']}/contents/{path}"
+
+#     payload = {
+#         "message": "🎧 New voice note from Capybara",
+#         "content": base64.b64encode(audio_bytes).decode("utf-8"),
+#         "branch": st.secrets["GITHUB_BRANCH"]
+#     }
+
+#     headers = {
+#         "Authorization": f"token {st.secrets['GITHUB_TOKEN']}",
+#         "Accept": "application/vnd.github+json"
+#     }
+
+#     response = requests.put(url, json=payload, headers=headers)
+
+#     if response.status_code not in (200, 201):
+#         raise Exception(f"GitHub upload failed: {response.text}")
+
+#     raw_url = (
+#         f"https://raw.githubusercontent.com/"
+#         f"{st.secrets['GITHUB_REPO']}/"
+#         f"{st.secrets['GITHUB_BRANCH']}/"
+#         f"{path}"
+#     )
+
+#     return raw_url
+
+# def get_movie_suggestion(mood, platform, language):
+#     if not client: return "Watch 'Fifty Shades' or '365 Days' (AI Offline)"
+    
+#     # 1. MOOD LOGIC
+#     if "Sexy" in mood or "Spicy" in mood:
+#         mood_context = "Erotic, Steamy, High-Chemistry Romance, or Sensual Thriller"
+#     else:
+#         mood_context = mood
+
+#     # 2. LANGUAGE LOGIC
+#     if language == "Any":
+#         lang_prompt = "Any language (English, Hindi, or Korean preferred)."
+#     else:
+#         lang_prompt = f"Strictly in {language} language (or excellent dub)."
+
+#     # 3. RANDOM STRATEGY (The Fix for Repetition) 🎲
+#     # We pick a random "filter" so the AI doesn't pick the same top movie every time.
+#     strategies = [
+#         "an underrated hidden gem",
+#         "a critically acclaimed masterpiece",
+#         "a massive blockbuster hit",
+#         "a cult classic",
+#         "something released in the last 3 years",
+#         "a fan favorite with high IMDB rating"
+#     ]
+#     selected_strategy = random.choice(strategies)
+
+#     try:
+#         prompt_text = (
+#             f"Suggest 1 specific Movie or Web Series available on {platform} (India Region Library). "
+#             f"The mood is: {mood_context}. "
+#             f"Language Constraint: {lang_prompt}. "
+#             f"Selection Strategy: Pick {selected_strategy}. " # <--- Forces variety
+#             f"We are a couple (Shalv and Capybara). "
+#             f"Give a 1-sentence plot summary and a 1-sentence cheeky/witty reason why we should watch it."
+#         )
+        
+#         response = client.chat.completions.create(
+#             model=deployment_name,
+#             messages=[
+#                 {"role": "system", "content": "You are a movie buff knowing the Indian OTT catalog. You suggest diverse movies, not just the most popular ones."},
+#                 {"role": "user", "content": prompt_text}
+#             ],
+#             temperature=0.9  # <--- Increased randomness (0.0 is repetitive, 1.0 is chaotic)
+#         )
+#         return response.choices[0].message.content
+#     except:
+#         return "Just watch 'Bridgerton' on Netflix. It hits the spot!"
+
+# def youtube_search(query, limit=5):
+#     """
+#     Robust YouTube search using multiple Invidious instances (Failover)
+#     """
+#     # List of public Invidious instances to try
+#     instances = [
+#         "https://inv.tux.pizza",
+#         "https://vid.puffyan.us", 
+#         "https://yewtu.be",
+#         "https://invidious.drgns.space"
+#     ]
+    
+#     params = {"q": query, "type": "video"}
+    
+#     for instance in instances:
+#         url = f"{instance}/api/v1/search"
+#         try:
+#             # 6-second timeout to prevent hanging
+#             r = requests.get(url, params=params, timeout=6)
+            
+#             if r.status_code == 200:
+#                 data = r.json()
+#                 # Verify we actually got a list of videos
+#                 if isinstance(data, list) and len(data) > 0:
+#                     return data[:limit]
+#         except Exception as e:
+#             print(f"Error connecting to {instance}: {e}")
+#             continue # Try the next server
+            
+#     return []
+
+# # --- CUSTOM CSS ---
+# st.markdown("""
+#     <style>
+#     @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+#     /* DYNAMIC BACKGROUND */
+#     .stApp {
+#         background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #ffd1ff, #a1c4fd);
+#         background-size: 400% 400%;
+#         animation: gradient 15s ease infinite;
+#     }
+#     .stApp::before {
+#         content: "";
+#         position: absolute;
+#         top: 0;
+#         left: 0;
+#         width: 100%;
+#         height: 100%;
+#         background-image: url("https://www.transparenttextures.com/patterns/hearts.png");
+#         opacity: 0.6;
+#         pointer-events: none;
+#     }
+#     @keyframes gradient {
+#         0% { background-position: 0% 50%; }
+#         50% { background-position: 100% 50%; }
+#         100% { background-position: 0% 50%; }
+#     }
+
+#     /* TITLE STYLE */
+#     .title-text {
+#         font-family: 'Pacifico', cursive;
+#         font-size: 60px;
+#         color: white;
+#         text-align: center;
+#         text-shadow: 3px 3px 0px #ff0066, 6px 6px 0px rgba(0,0,0,0.2);
+#         margin-bottom: 10px;
+#         animation: bounce 2s infinite;
+#     }
+#     @keyframes bounce {
+#         0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+#         40% {transform: translateY(-20px);}
+#         60% {transform: translateY(-10px);}
+#     }
+
+#     /* BUTTONS */
+#     .stButton > button {
+#         background-color: #ffffff !important; 
+#         color: #000000 !important; 
+#         border: 2px solid #000000 !important;
+#         border-radius: 12px;
+#         padding: 10px 20px;
+#         font-weight: 900 !important;
+#         text-transform: uppercase;
+#         box-shadow: 4px 4px 0px #000000 !important;
+#         transition: all 0.2s ease;
+#     }
+#     .stButton > button:hover {
+#         transform: translate(-2px, -2px);
+#         box-shadow: 6px 6px 0px #000000 !important;
+#         background-color: #ffe6e6 !important;
+#     }
+
+#     /* TABS */
+#     .stTabs [data-baseweb="tab-panel"] {
+#         background: rgba(255, 255, 255, 0.85);
+#         backdrop-filter: blur(10px);
+#         border-radius: 20px;
+#         padding: 25px;
+#         border: 2px solid #000;
+#         box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
+#     }
+
+#     h1, h2, h3 { color: #D63384 !important; text-shadow: 2px 2px 0px #ffffff; font-family: 'Arial Black', sans-serif; }
+#     p, div, label, span, li { color: #000000 !important; font-weight: 600; }
+
+#     /* ========================= */
+#     /* 🔥 MOBILE INPUT & DROPDOWN FIX (GREY FIX) */
+#     /* ========================= */
+
+#     :root {
+#         color-scheme: light !important;
+#     }
+
+#     /* Force Input Boxes to be White with Black Text */
+#     input, textarea, select {
+#         background-color: #ffffff !important;
+#         color: #000000 !important;
+#         -webkit-text-fill-color: #000000 !important;
+#         caret-color: #000000 !important;
+#         border: 2px solid #000000 !important;
+#     }
+
+#     /* FORCE THE DROPDOWN MENU TO BE WHITE */
+#     div[data-baseweb="select"] > div {
+#         background-color: #ffffff !important;
+#         color: #000000 !important;
+#         border-color: #000000 !important;
+#     }
+    
+#     /* The Pop-up Menu container */
+#     div[data-baseweb="popover"], div[data-baseweb="menu"] {
+#         background-color: #ffffff !important;
+#         border: 2px solid black !important;
+#     }
+    
+#     /* The individual options in the list */
+#     div[data-baseweb="option"] {
+#         background-color: #ffffff !important;
+#         color: #000000 !important; 
+#     }
+    
+#     /* Hover effect for options (Pink highlight) */
+#     div[data-baseweb="option"]:hover {
+#         background-color: #FFC0CB !important;
+#         color: #000000 !important;
+#     }
+    
+#     /* Selected option */
+#     div[aria-selected="true"] {
+#         background-color: #FFC0CB !important;
+#         color: #000000 !important;
+#     }
+
+#     /* Placeholder Text Color */
+#     ::placeholder {
+#         color: #555555 !important;
+#         opacity: 1 !important;
+#     }
+
+#     #MainMenu, footer, header {visibility: hidden;}
+#     </style>
+#     """, unsafe_allow_html=True)
+
+# # --- AUTHENTICATION ---
+# if "authenticated" not in st.session_state:
+#     st.session_state.authenticated = False
+
+# if not st.session_state.authenticated:
+#     st.markdown("<br><br>", unsafe_allow_html=True)
+#     st.markdown('<p class="title-text">Locked 🔒</p>', unsafe_allow_html=True)
+#     col1, col2, col3 = st.columns([1,2,1])
+#     with col2:
+#         st.write("Password hint: What do I call you?")
+#         password = st.text_input("Password", type="password", label_visibility="collapsed")
+#         if st.button("Unlock ❤️", use_container_width=True):
+#             if password.lower() == "capybara": 
+#                 st.session_state.authenticated = True
+#                 st.rerun()
+#             elif password:
+#                 st.error("Access Denied! 🤨")
+#     st.stop() 
+
+# # --- MAIN APP ---
+# if "voice_draft" not in st.session_state:
+#     st.session_state.voice_draft = None
+
+
+# st.markdown('<p class="title-text">My Capybara ❤️</p>', unsafe_allow_html=True)
+
+# # UPDATE THIS LINE
+# tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["🏠 Us", "🍽️ Food", "🎰 Play", "💌 Vent", "📍 Map", "🎬 Watch"])
+
+# # --- TAB 1: DASHBOARD ---
+# # --- TAB 1: DASHBOARD ---
+# with tab1:
+#     # GIF: Your Custom US Page GIF
+#     c1, c2, c3 = st.columns([1, 2, 1])
+#     with c2:
+#         st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcTVnOGxnNzIwZG51ZXFocGRtMjljY2g3c2xmc21pc2JhZjNtYWIyOCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/yu7xIHQ2UysA7GwoXx/giphy.gif")
+
+#     st.markdown("### 💑 Our Timeline")
+#     start_date = date(2024, 9, 7) 
+#     today = date.today()
+#     delta = today - start_date
+#     c1, c2 = st.columns(2)
+#     c1.info(f"**{delta.days}** Days")
+#     c2.info(f"**{delta.days * 24}** Hours")
+#     st.markdown("---")
+    
+#     st.markdown("### 📸 Memories")
+#     photo_dir = "photos"
+#     if os.path.exists(photo_dir) and len(os.listdir(photo_dir)) > 0:
+#         images = [f for f in os.listdir(photo_dir) if f.endswith(('.png', '.jpg', '.jpeg', '.webp'))]
+#         if images:
+#             random_image = random.choice(images)
+#             st.image(f"{photo_dir}/{random_image}", caption="Us ❤️")
+#             if st.button("Next Pic 🔄", use_container_width=True):
+#                 st.rerun()
+#     else:
+#         st.info("💡 (Upload photos to GitHub to see them here!)")
+    
+#     st.markdown("---")
+#     st.markdown("### 💌 Daily Note")
+#     if "daily_note" not in st.session_state:
+#         st.session_state.daily_note = get_ai_love_note()  
+#     st.success(f"✨ {st.session_state.daily_note}")
+#     if st.button("New Note 🎲", use_container_width=True):
+#         del st.session_state.daily_note
+#         st.rerun()
+        
+#     st.markdown("---")
+    
+#     st.markdown("### 🎵 Jukebox")
+#     query = st.text_input(
+#         "Search a song for your current mood 💗",
+#          placeholder="Song name / Artist / Lyrics"
+#     )
+    
+#     if query:
+#         with st.spinner("Searching YouTube..."):
+#             try:
+#                 # Returns a list of dictionaries
+#                 results = YoutubeSearch(query, max_results=5).to_dict()
+                
+#                 if results:
+#                     # Creating the dropdown options
+#                     # note: this library uses 'id' instead of 'videoId'
+#                     options = {
+#                         f"{v['title']} — {v['channel']}": f"https://www.youtube.com/watch?v={v['id']}"
+#                         for v in results
+#                     }
+                    
+#                     selected = st.selectbox("Pick one 🎶", options.keys())
+#                     st.video(options[selected])
+#                 else:
+#                     st.error("Couldn't find that song 😔 Try another?")
+#             except Exception as e:
+#                 st.error("Search failed momentarily. Try again!")
+#     else:
+#         st.caption("💡 Try: 'Tum Se Hi', 'Until I Found You', 'Die For You'")# --- TAB 2: STREET FOOD GUIDE ---
+# with tab2:
+#     # GIF: Your Custom FOOD Page GIF
+#     c1, c2, c3 = st.columns([1,2,1])
+#     with c2:
+#         st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdG5iOXFsdTFyYjMxaXZrMTA0Y2t6amdpN3d2aHdldWUzbTl2MTF1cyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/QKSXTlCRK0r1N2NnkV/giphy.gif")
+        
+#     st.markdown("### 🥟 Street Foodie")
+#     st.write("Tasty and Near Sector 48 (Under ₹300).")
+#     vibe = st.select_slider("Mood?", options=["Momos 🥟", "Spicy 🌶️", "Cheesy 🧀", "Desi 🥘", "Sweet 🍩"])
+#     if st.button("Find Snack 🌯", use_container_width=True):
+#         with st.spinner("Scanning street stalls..."):
+#             suggestion = get_food_suggestion(vibe)
+#             st.success(suggestion)
+
+# # --- TAB 3: SPICY SLOTS ---
+# with tab3:
+#     # GIF: Your Custom PLAY Page GIF
+#     c1, c2, c3 = st.columns([1,2,1])
+#     with c2:
+#         st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMnBoNjlieXMxNHFxZjd4YzdxZmh6bHluaWxjY3l1b3hneXJoOTU1ZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/4PbHPdnetp3Pi/giphy.gif")
+        
+#     st.markdown("### 🎰 Naughty Slots")
+#     st.write("Spin to unlock a reward. (18+)")
+    
+#     spicy_gifts = [
+#         "😈 Coupon: I go down on you (No questions asked)",
+#         "🧴 Reward: Full Body Oil Massage (30 mins)",
+#         "🚿 Reward: Shower Together Voucher",
+#         "👙 Reward: You pick my underwear/outfit today",
+#         "💋 Reward: 100 Kisses anywhere you want",
+#         "👀 Reward: I strip for you (Don't laugh)",
+#         "🧞‍♂️ Coupon: One Bedroom 'Wish' (I do anything)",
+#         "🍑 Reward: A good hard spanking",
+#         "💤 Reward: We sleep naked tonight"
+#     ]
+    
+#     if st.button("SPIN IT! 🎲", use_container_width=True):
+#         items = ["😈", "🍑", "🥔", "🫦", "❤️", "🍆"]
+#         with st.spinner("Spinning..."):
+#             time.sleep(1)
+        
+#         force_win = False
+#         if random.random() < 0.40:
+#             force_win = True
+            
+#         if force_win:
+#             a = "😈"
+#             b = "😈"
+#             c = "❤️" 
+#         else:
+#             a = random.choice(items)
+#             b = random.choice(items)
+#             c = random.choice(items)
+        
+#         st.markdown(f"<h1 style='text-align: center; color: black !important;'>{a} | {b} | {c}</h1>", unsafe_allow_html=True)
+        
+#         if a == b == c:
+#             st.balloons()
+#             prize = "🧞‍♂️ JACKPOT: I do ANYTHING you say today."
+#             st.success(f"{prize}")
+#         elif force_win:
+#              st.info("Lucky Spin! 🥈")
+#              st.success("🤫 Reward: Roleplay Night (You choose the script)")
+#              st.caption("Valid for 24 hours!")
+#         elif a == b or b == c or a == c:
+#             st.info("Mini Win! 🥈")
+#             prize = random.choice(spicy_gifts)
+#             st.write(f"You won: **{prize}**")
+#         else:
+#             st.error("No Match! 😢 But I still love you.")
+#             st.write("Spin again baby.")
+
+# # --- TAB 4: VENT ---
+# with tab4:
+#     # GIF: Keep existing (Cute Capybara with orange)
+#     c1, c2, c3 = st.columns([1,2,1])
+#     with c2:
+#         st.image("https://media.giphy.com/media/Q8OPrlvICzjajupr2T/giphy.gif")
+        
+#     st.markdown("### 🛡️ Safe Space")
+#     reason = st.selectbox("What's up?", ["Work Stress", "Miss You", "Anxious", "Just Venting"])
+#     details = st.text_area("Tell me more:", placeholder="...")
+#     if st.button("Send to Shalv 📨", use_container_width=True):
+#         st.warning(f"Message sent. I love you.")
+#         st.video("https://www.youtube.com/watch?v=f9PKHVesfDc")
+#         send_notification(f"🚨 Capybara Alert! {reason}: {details}")
+
+
+# st.markdown("---")
+# st.markdown("### 🎙️ Send a Voice Note")
+
+# audio_file = st.audio_input("Hold to record")
+
+# # Store recording as draft
+# if audio_file:
+#     st.session_state.voice_draft = audio_file.getvalue()
+#     st.success("Voice recorded. Tap Send when ready 💌")
+
+# # Only show Send button if a draft exists
+# if st.session_state.voice_draft:
+#     col1, col2 = st.columns(2)
+
+#     with col1:
+#         if st.button("❌ Discard", use_container_width=True):
+#             st.session_state.voice_draft = None
+#             st.info("Recording discarded")
+
+#     with col2:
+#         if st.button("📤 Send Voice", use_container_width=True):
+#             with st.spinner("Sending your voice..."):
+#                 raw_url = upload_voice_to_github(
+#                     st.session_state.voice_draft,
+#                     "webm"  # or wav if you prefer
+#                 )
+
+#                 send_notification(
+#                     f"🎧 New voice note from Capybara 💖\n\n▶️ Listen:\n{raw_url}"
+#                 )
+
+#             st.session_state.voice_draft = None
+#             st.success("Voice note sent 💕")
+
+
+# # --- TAB 5: MAP OF US ---
+# with tab5:
+#     # GIF: Your Custom MAP Page GIF
+#     c1, c2, c3 = st.columns([1,2,1])
+#     with c2:
+#         st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXJlN2xjc3VyZ3Y4dHNzb29udjkzbXdvYmhkNjUyaGg5NXAydDlrZyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vTfFCC3rSfKco/giphy.gif")
+
+#     st.markdown("### 📍 Where it all started")
+    
+#     # 1. Define Data
+#     map_data = pd.DataFrame({
+#         'lat': [28.4026, 28.4108, 28.3930],
+#         'lon': [77.0673, 77.0380, 77.0680],
+#         'label': ['First Date', 'First Kiss', 'First Meeting'],
+#         'color': [
+#             [255, 0, 128, 200],  # Pink (Date)
+#             [255, 0, 0, 200],    # Red (Kiss)
+#             [0, 200, 0, 200]     # Green (Meeting)
+#         ]
+#     })
+    
+#     # 2. Define Layers
+#     scatter_layer = pdk.Layer(
+#         "ScatterplotLayer",
+#         map_data,
+#         get_position='[lon, lat]',
+#         get_color='color',
+#         get_radius=200,
+#         pickable=True,
+#     )
+    
+#     text_layer = pdk.Layer(
+#         "TextLayer",
+#         map_data,
+#         get_position='[lon, lat]',
+#         get_text='label',
+#         get_size=15, 
+#         get_color=[0, 0, 0, 255], 
+#         get_angle=0,
+#         get_text_anchor='"middle"',
+#         get_alignment_baseline='"top"'
+#     )
+    
+#     # 3. View State
+#     view_state = pdk.ViewState(
+#         latitude=28.405,
+#         longitude=77.055,
+#         zoom=13,
+#         pitch=0
+#     )
+    
+#     # 4. Render
+#     st.pydeck_chart(pdk.Deck(
+#         layers=[scatter_layer, text_layer],
+#         initial_view_state=view_state,
+#         tooltip={"text": "{label}"}
+#     ))
+    
+#     st.markdown("---")
+#     # THE LEGEND
+#     st.markdown("### 🗺️ Legend")
+#     st.markdown("""
+#     <div style='background-color: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; border: 2px solid black;'>
+#         <p style='color: green; margin:0; font-size: 16px;'>🟢 <b>First Meeting:</b> Salescode.ai (M3M Urbana); Where I first was fascinated by your Green Top</p>
+#         <br>
+#         <p style='color: #D63384; margin:0; font-size: 16px;'>🌸 <b>First Date:</b> Trippy Tequila M3M IFC; Where I realized I like you</p>
+#         <br>
+#         <p style='color: red; margin:0; font-size: 16px;'>🔴 <b>First Kiss:</b> Parking of Vega Schools; Where I realized I love you</p>
+#     </div>
+#     """, unsafe_allow_html=True)
+
+
+# # --- TAB 6: MOVIE SUGGESTER ---
+# with tab6:
+#     c1, c2, c3 = st.columns([1,2,1])
+#     with c2:
+#         # Cute GIF of people watching TV
+#         st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbjVvOWdwZjF2ZXRzaTRsMTB0em8yaXJxcnRwbzVzMmozbzE1enZ2MSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/GYikUbu3p5UdyBhe4r/giphy.gif")
+
+#     st.markdown("### 🍿 Movie Night Picker")
+#     st.write("Can't decide what to watch? Let my chintu sa bot pick.")
+
+#     # 3 Columns now: Mood | Language | Platform
+#     col1, col2, col3 = st.columns(3)
+    
+#     with col1:
+#         mood = st.selectbox("Current Mood", [
+#             "Romantic 🥰", 
+#             "Spicy/Sexy 🌶️", 
+#             "Comedy 😂", 
+#             "Thriller/Mystery 🕵️‍♀️", 
+#             "Horror 👻", 
+#             "Feel Good ✨", 
+#             "Cry my eyes out 😭"
+#         ])
+    
+#     with col2:
+#         language = st.selectbox("Language", [
+#             "Any", "English", "Hindi", "Korean", "Spanish"
+#         ])
+
+#     with col3:
+#         platform = st.selectbox("Platform", [
+#             "Netflix", "Amazon Prime", "Hotstar", "Any"
+#         ])
+
+#     if st.button("Recommend Something 🎞️", use_container_width=True):
+#         with st.spinner("Checking Indian libraries..."): 
+#             # Pass all 3 variables now
+#             suggestion = get_movie_suggestion(mood, platform, language)
+#             st.success(suggestion)
+            
+#             # Special effects for romantic/spicy moods
+#             if "Romantic" in mood or "Sexy" in mood:
+#                 st.balloons()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import streamlit as st
 import random
 import time
@@ -5,15 +704,14 @@ import requests
 import os
 import pandas as pd
 import pydeck as pdk
-from datetime import date
+from datetime import date, datetime
 from openai import AzureOpenAI
 import base64
 import uuid
-from datetime import datetime
 from youtube_search import YoutubeSearch
 
 # --- CONFIGURATION ---
-st.set_page_config(page_title="For My Capybara", page_icon="🥔", layout="centered")
+st.set_page_config(page_title="Merry Christmas Capybara", page_icon="🎄", layout="centered")
 
 # --- AI SETUP ---
 try:
@@ -35,304 +733,187 @@ def send_notification(message):
         pass
 
 def get_ai_love_note():
-    if not client: return "I love you more than code! (AI Offline)"
+    if not client: return "All I want for Christmas is you! ❤️ (AI Offline)"
     try:
         response = client.chat.completions.create(
             model=deployment_name,
             messages=[
-                {"role": "system", "content": "You are a romantic boyfriend named Shalv. Write a 1-sentence witty, cute love note for your girlfriend 'Capybara'. Use emojis."},
+                {"role": "system", "content": "You are a romantic boyfriend named Shalv. Write a 1-sentence Christmas-themed love note for your girlfriend 'Capybara'. Mention mistletoe, snow, or hot cocoa. Use emojis."},
                 {"role": "user", "content": "Write a note for today."}
             ]
         )
         return response.choices[0].message.content
     except:
-        return "You are my favorite notification ❤️"
+        return "You are the star on my Christmas tree 🌟"
 
 def get_food_suggestion(vibe):
-    if not client: return "Just go to Bhai Ji Shawarma! (AI Offline)"
+    if not client: return "Hot Chocolate at Starbucks! (AI Offline)"
 
     # --- 1. CAPYBARA'S TASTE PROFILE ---
-    # We explicitly tell the AI what she loves and hates to guide the suggestion.
     her_tastes = (
         "USER PROFILE (CAPYBARA): \n"
-        "- LOVES (Sweet): Cheesecake, Nutella Cheesecake Waffle, Biscoff Waffle (The Belgian Waffle Co).\n"
-        "- HATES (Sweet): Red Velvet (NEVER suggest this).\n"
-        "- LOVES (Savory): 7 Cheese/Mac & Cheese Pizza (La Pino'z), Crispy Paneer Shawarma (Bhai Ji), "
-        "Manchurian & Fried Rice (Hong's Kitchen), Mac & Cheese (Social).\n"
-        "- PREFERENCE: She likes 'Cheesy', 'Crispy', and 'Spicy' textures."
+        "- LOVES: Cheesecake, Nutella Waffles, Hot Chocolate, Cheese, Crispy textures.\n"
+        "- HATES: Red Velvet.\n"
+        "- SEASON: It is Christmas/Winter. Suggest cozy, warm, festive foods."
     )
-
-    # --- 2. DYNAMIC PROMPT LOGIC ---
-    if "Sweet" in vibe:
-        category = "DESSERT (Cheesecake, Waffles, Chocolate)"
-        constraint = "Strictly NO savory items. STRICTLY NO RED VELVET. Suggest something indulgent."
-    else:
-        category = "SAVORY VEGETARIAN street food/snack"
-        constraint = "Ensure it is cheesy, crispy, or spicy. NO sweets."
 
     try:
         prompt_text = (
-            f"Suggest 1 specific {category} near Sector 48 Gurgaon (Sohna Road). "
-            f"Cost must be UNDER ₹400. \n"
-            f"{her_tastes}\n" # <--- Injecting her profile here
-            f"Constraint: {constraint} \n"
-            f"Format: 'Dish Name' at 'Restaurant Name' (~Price). "
-            f"Add a witty reason why it fits the '{vibe}' vibe."
+            f"Suggest 1 specific Christmas/Winter treat ({vibe}) near Sector 48 Gurgaon. "
+            f"Cost under ₹500. \n"
+            f"{her_tastes}\n"
+            f"Format: 'Dish Name' at 'Restaurant Name'. Add a cozy reason."
         )
         
         response = client.chat.completions.create(
             model=deployment_name,
             messages=[
-                {"role": "system", "content": "You are a Gurgaon food expert who knows my girlfriend's specific taste buds."},
+                {"role": "system", "content": "You are a Gurgaon food expert helping a boyfriend treat his girl for Christmas."},
                 {"role": "user", "content": prompt_text}
             ]
         )
         return response.choices[0].message.content
     except:
-        return "Just get the Nutella Waffle from Belgian Waffle Co. It never fails."
+        return "Get the Dark Hot Chocolate from Paul's or Colocal. It's a hug in a mug!"
 
-def upload_voice_to_github(audio_bytes, extension):
-    filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex}.{extension}"
-    path = f"voice/{filename}"
-
-    url = f"https://api.github.com/repos/{st.secrets['GITHUB_REPO']}/contents/{path}"
-
-    payload = {
-        "message": "🎧 New voice note from Capybara",
-        "content": base64.b64encode(audio_bytes).decode("utf-8"),
-        "branch": st.secrets["GITHUB_BRANCH"]
-    }
-
-    headers = {
-        "Authorization": f"token {st.secrets['GITHUB_TOKEN']}",
-        "Accept": "application/vnd.github+json"
-    }
-
-    response = requests.put(url, json=payload, headers=headers)
-
-    if response.status_code not in (200, 201):
-        raise Exception(f"GitHub upload failed: {response.text}")
-
-    raw_url = (
-        f"https://raw.githubusercontent.com/"
-        f"{st.secrets['GITHUB_REPO']}/"
-        f"{st.secrets['GITHUB_BRANCH']}/"
-        f"{path}"
-    )
-
-    return raw_url
-
-def get_movie_suggestion(mood, platform, language):
-    if not client: return "Watch 'Fifty Shades' or '365 Days' (AI Offline)"
+def get_movie_suggestion(mood, platform):
+    if not client: return "Watch 'Home Alone' or 'The Holiday' (AI Offline)"
     
-    # 1. MOOD LOGIC
-    if "Sexy" in mood or "Spicy" in mood:
-        mood_context = "Erotic, Steamy, High-Chemistry Romance, or Sensual Thriller"
-    else:
-        mood_context = mood
-
-    # 2. LANGUAGE LOGIC
-    if language == "Any":
-        lang_prompt = "Any language (English, Hindi, or Korean preferred)."
-    else:
-        lang_prompt = f"Strictly in {language} language (or excellent dub)."
-
-    # 3. RANDOM STRATEGY (The Fix for Repetition) 🎲
-    # We pick a random "filter" so the AI doesn't pick the same top movie every time.
-    strategies = [
-        "an underrated hidden gem",
-        "a critically acclaimed masterpiece",
-        "a massive blockbuster hit",
-        "a cult classic",
-        "something released in the last 3 years",
-        "a fan favorite with high IMDB rating"
-    ]
-    selected_strategy = random.choice(strategies)
-
     try:
         prompt_text = (
-            f"Suggest 1 specific Movie or Web Series available on {platform} (India Region Library). "
-            f"The mood is: {mood_context}. "
-            f"Language Constraint: {lang_prompt}. "
-            f"Selection Strategy: Pick {selected_strategy}. " # <--- Forces variety
-            f"We are a couple (Shalv and Capybara). "
-            f"Give a 1-sentence plot summary and a 1-sentence cheeky/witty reason why we should watch it."
+            f"Suggest 1 specific Movie on {platform} (India). "
+            f"Mood: {mood}. It MUST be perfect for a couple watching on Christmas Eve/Day. "
+            f"Prefer: Rom-Coms, Cozy vibes, or Harry Potter style magic. "
+            f"Give a 1-sentence cheeky reason why we should cuddle and watch it."
         )
         
         response = client.chat.completions.create(
             model=deployment_name,
             messages=[
-                {"role": "system", "content": "You are a movie buff knowing the Indian OTT catalog. You suggest diverse movies, not just the most popular ones."},
+                {"role": "system", "content": "You are a movie buff suggesting Christmas movies for a couple."},
                 {"role": "user", "content": prompt_text}
             ],
-            temperature=0.9  # <--- Increased randomness (0.0 is repetitive, 1.0 is chaotic)
+            temperature=0.9 
         )
         return response.choices[0].message.content
     except:
-        return "Just watch 'Bridgerton' on Netflix. It hits the spot!"
+        return "Just watch 'Love Actually' on Netflix. It's tradition!"
 
-def youtube_search(query, limit=5):
-    """
-    Robust YouTube search using multiple Invidious instances (Failover)
-    """
-    # List of public Invidious instances to try
-    instances = [
-        "https://inv.tux.pizza",
-        "https://vid.puffyan.us", 
-        "https://yewtu.be",
-        "https://invidious.drgns.space"
-    ]
-    
-    params = {"q": query, "type": "video"}
-    
-    for instance in instances:
-        url = f"{instance}/api/v1/search"
-        try:
-            # 6-second timeout to prevent hanging
-            r = requests.get(url, params=params, timeout=6)
-            
-            if r.status_code == 200:
-                data = r.json()
-                # Verify we actually got a list of videos
-                if isinstance(data, list) and len(data) > 0:
-                    return data[:limit]
-        except Exception as e:
-            print(f"Error connecting to {instance}: {e}")
-            continue # Try the next server
-            
-    return []
-
-# --- CUSTOM CSS ---
+# --- CUSTOM CSS (CHRISTMAS THEME) ---
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Quicksand:wght@500;700&display=swap');
 
-    /* DYNAMIC BACKGROUND */
+    /* SNOWFALL ANIMATION */
+    .snowflake {
+        color: #fff;
+        font-size: 1em;
+        font-family: Arial, sans-serif;
+        text-shadow: 0 0 5px #000;
+        position: fixed;
+        top: -10%;
+        z-index: 9999;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        cursor: default;
+        animation-name: snowflakes-fall, snowflakes-shake;
+        animation-duration: 10s, 3s;
+        animation-timing-function: linear, ease-in-out;
+        animation-iteration-count: infinite, infinite;
+        animation-play-state: running, running;
+    }
+    @keyframes snowflakes-fall {
+        0% {top: -10%;}
+        100% {top: 100%;}
+    }
+    @keyframes snowflakes-shake {
+        0%, 100% {transform: translateX(0);}
+        50% {transform: translateX(80px);}
+    }
+    /* Generating random snow positions */
+    .snowflake:nth-of-type(0) {left: 1%; animation-delay: 0s, 0s;}
+    .snowflake:nth-of-type(1) {left: 10%; animation-delay: 1s, 1s;}
+    .snowflake:nth-of-type(2) {left: 20%; animation-delay: 6s, .5s;}
+    .snowflake:nth-of-type(3) {left: 30%; animation-delay: 4s, 2s;}
+    .snowflake:nth-of-type(4) {left: 40%; animation-delay: 2s, 2s;}
+    .snowflake:nth-of-type(5) {left: 50%; animation-delay: 8s, 3s;}
+    .snowflake:nth-of-type(6) {left: 60%; animation-delay: 6s, 2s;}
+    .snowflake:nth-of-type(7) {left: 70%; animation-delay: 2.5s, 1s;}
+    .snowflake:nth-of-type(8) {left: 80%; animation-delay: 1s, 0s;}
+    .snowflake:nth-of-type(9) {left: 90%; animation-delay: 3s, 1.5s;}
+    
+    /* CHRISTMAS BACKGROUND */
     .stApp {
-        background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #ffd1ff, #a1c4fd);
-        background-size: 400% 400%;
-        animation: gradient 15s ease infinite;
+        /* Deep Red to Green Gradient */
+        background: linear-gradient(135deg, #165B33 0%, #0B3822 50%, #BB2528 100%);
+        background-attachment: fixed;
     }
-    .stApp::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: url("https://www.transparenttextures.com/patterns/hearts.png");
-        opacity: 0.6;
-        pointer-events: none;
+    
+    /* FONTS & HEADERS */
+    h1, h2, h3 { 
+        color: #F8B229 !important; /* Gold */
+        text-shadow: 2px 2px 0px #146B3A; 
+        font-family: 'Mountains of Christmas', cursive;
     }
-    @keyframes gradient {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-
-    /* TITLE STYLE */
     .title-text {
-        font-family: 'Pacifico', cursive;
-        font-size: 60px;
-        color: white;
+        font-family: 'Mountains of Christmas', cursive;
+        font-size: 70px;
+        color: #FFFFFF;
         text-align: center;
-        text-shadow: 3px 3px 0px #ff0066, 6px 6px 0px rgba(0,0,0,0.2);
+        text-shadow: 0 0 10px #FF0000, 0 0 20px #00FF00;
         margin-bottom: 10px;
-        animation: bounce 2s infinite;
     }
-    @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-        40% {transform: translateY(-20px);}
-        60% {transform: translateY(-10px);}
+    
+    /* CARDS/TABS */
+    .stTabs [data-baseweb="tab-panel"] {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 20px;
+        border: 4px solid #BB2528; /* Christmas Red Border */
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); /* Gold Glow */
     }
-
+    
     /* BUTTONS */
     .stButton > button {
-        background-color: #ffffff !important; 
-        color: #000000 !important; 
-        border: 2px solid #000000 !important;
-        border-radius: 12px;
-        padding: 10px 20px;
-        font-weight: 900 !important;
-        text-transform: uppercase;
-        box-shadow: 4px 4px 0px #000000 !important;
-        transition: all 0.2s ease;
+        background-color: #BB2528 !important; /* Red */
+        color: white !important;
+        border: 2px solid #F8B229 !important; /* Gold */
+        border-radius: 20px;
+        font-family: 'Quicksand', sans-serif;
+        font-weight: bold;
     }
     .stButton > button:hover {
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0px #000000 !important;
-        background-color: #ffe6e6 !important;
+        background-color: #146B3A !important; /* Green */
+        transform: scale(1.05);
     }
 
-    /* TABS */
-    .stTabs [data-baseweb="tab-panel"] {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 25px;
-        border: 2px solid #000;
-        box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
+    p, div, label, span, li { 
+        color: #0B3822 !important; /* Dark Green Text */
+        font-family: 'Quicksand', sans-serif;
+        font-weight: 600; 
     }
-
-    h1, h2, h3 { color: #D63384 !important; text-shadow: 2px 2px 0px #ffffff; font-family: 'Arial Black', sans-serif; }
-    p, div, label, span, li { color: #000000 !important; font-weight: 600; }
-
-    /* ========================= */
-    /* 🔥 MOBILE INPUT & DROPDOWN FIX (GREY FIX) */
-    /* ========================= */
-
-    :root {
-        color-scheme: light !important;
-    }
-
-    /* Force Input Boxes to be White with Black Text */
+    
+    /* INPUT FIELDS */
     input, textarea, select {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-        -webkit-text-fill-color: #000000 !important;
-        caret-color: #000000 !important;
-        border: 2px solid #000000 !important;
-    }
-
-    /* FORCE THE DROPDOWN MENU TO BE WHITE */
-    div[data-baseweb="select"] > div {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-        border-color: #000000 !important;
+        border: 2px solid #146B3A !important;
+        color: #000 !important;
     }
     
-    /* The Pop-up Menu container */
-    div[data-baseweb="popover"], div[data-baseweb="menu"] {
-        background-color: #ffffff !important;
-        border: 2px solid black !important;
-    }
-    
-    /* The individual options in the list */
-    div[data-baseweb="option"] {
-        background-color: #ffffff !important;
-        color: #000000 !important; 
-    }
-    
-    /* Hover effect for options (Pink highlight) */
-    div[data-baseweb="option"]:hover {
-        background-color: #FFC0CB !important;
-        color: #000000 !important;
-    }
-    
-    /* Selected option */
-    div[aria-selected="true"] {
-        background-color: #FFC0CB !important;
-        color: #000000 !important;
-    }
-
-    /* Placeholder Text Color */
-    ::placeholder {
-        color: #555555 !important;
-        opacity: 1 !important;
-    }
-
     #MainMenu, footer, header {visibility: hidden;}
     </style>
+    
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
     """, unsafe_allow_html=True)
 
 # --- AUTHENTICATION ---
@@ -341,242 +922,136 @@ if "authenticated" not in st.session_state:
 
 if not st.session_state.authenticated:
     st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown('<p class="title-text">Locked 🔒</p>', unsafe_allow_html=True)
+    st.markdown('<p class="title-text">Ho Ho Ho! 🎅</p>', unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1,2,1])
     with col2:
-        st.write("Password hint: What do I call you?")
-        password = st.text_input("Password", type="password", label_visibility="collapsed")
-        if st.button("Unlock ❤️", use_container_width=True):
+        st.info("Santa Shalv has a gift for you.")
+        password = st.text_input("Enter Secret Password", type="password", placeholder="Hint: Who are you?")
+        if st.button("Unwrap Gift 🎁", use_container_width=True):
             if password.lower() == "capybara": 
                 st.session_state.authenticated = True
                 st.rerun()
             elif password:
-                st.error("Access Denied! 🤨")
+                st.error("Naughty list! Try again 😈")
     st.stop() 
 
 # --- MAIN APP ---
-if "voice_draft" not in st.session_state:
-    st.session_state.voice_draft = None
+st.markdown('<p class="title-text">Merry Xmas Capybara 🎄</p>', unsafe_allow_html=True)
 
+# TABS
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["🏠 Us", "🍫 Food", "🎰 Play", "💌 Vent", "📍 Map", "🎬 Movie", "🎁 VAULT"])
 
-st.markdown('<p class="title-text">My Capybara ❤️</p>', unsafe_allow_html=True)
-
-# UPDATE THIS LINE
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["🏠 Us", "🍽️ Food", "🎰 Play", "💌 Vent", "📍 Map", "🎬 Watch"])
-
-# --- TAB 1: DASHBOARD ---
 # --- TAB 1: DASHBOARD ---
 with tab1:
-    # GIF: Your Custom US Page GIF
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
-        st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcTVnOGxnNzIwZG51ZXFocGRtMjljY2g3c2xmc21pc2JhZjNtYWIyOCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/yu7xIHQ2UysA7GwoXx/giphy.gif")
+        # Christmas Couple GIF
+        st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjR6b216czR6b216czR6b216czR6b216czR6b216czR6b216cyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o6fJdYXEWMaCI1pMA/giphy.gif")
 
-    st.markdown("### 💑 Our Timeline")
+    st.markdown("### 💑 Our Christmas Timeline")
     start_date = date(2024, 9, 7) 
     today = date.today()
     delta = today - start_date
-    c1, c2 = st.columns(2)
-    c1.info(f"**{delta.days}** Days")
-    c2.info(f"**{delta.days * 24}** Hours")
-    st.markdown("---")
     
-    st.markdown("### 📸 Memories")
-    photo_dir = "photos"
-    if os.path.exists(photo_dir) and len(os.listdir(photo_dir)) > 0:
-        images = [f for f in os.listdir(photo_dir) if f.endswith(('.png', '.jpg', '.jpeg', '.webp'))]
-        if images:
-            random_image = random.choice(images)
-            st.image(f"{photo_dir}/{random_image}", caption="Us ❤️")
-            if st.button("Next Pic 🔄", use_container_width=True):
-                st.rerun()
-    else:
-        st.info("💡 (Upload photos to GitHub to see them here!)")
+    st.success(f"We have been naughty & nice for **{delta.days} Days**! ❄️")
     
     st.markdown("---")
-    st.markdown("### 💌 Daily Note")
+    st.markdown("### 🎅 Santa Shalv says:")
     if "daily_note" not in st.session_state:
         st.session_state.daily_note = get_ai_love_note()  
-    st.success(f"✨ {st.session_state.daily_note}")
-    if st.button("New Note 🎲", use_container_width=True):
+    st.info(f"📜 {st.session_state.daily_note}")
+    if st.button("New Wish ✨", use_container_width=True):
         del st.session_state.daily_note
         st.rerun()
         
     st.markdown("---")
-    
-    st.markdown("### 🎵 Jukebox")
-    query = st.text_input(
-        "Search a song for your current mood 💗",
-         placeholder="Song name / Artist / Lyrics"
-    )
+    st.markdown("### 🎵 Christmas Jukebox")
+    query = st.text_input("Play a Christmas carol 🎻", placeholder="All I Want For Christmas...")
     
     if query:
-        with st.spinner("Searching YouTube..."):
+        with st.spinner("Asking the Elves..."):
             try:
-                # Returns a list of dictionaries
-                results = YoutubeSearch(query, max_results=5).to_dict()
-                
+                results = YoutubeSearch(query, max_results=3).to_dict()
                 if results:
-                    # Creating the dropdown options
-                    # note: this library uses 'id' instead of 'videoId'
-                    options = {
-                        f"{v['title']} — {v['channel']}": f"https://www.youtube.com/watch?v={v['id']}"
-                        for v in results
-                    }
-                    
+                    options = {f"{v['title']}": f"https://www.youtube.com/watch?v={v['id']}" for v in results}
                     selected = st.selectbox("Pick one 🎶", options.keys())
                     st.video(options[selected])
-                else:
-                    st.error("Couldn't find that song 😔 Try another?")
-            except Exception as e:
-                st.error("Search failed momentarily. Try again!")
-    else:
-        st.caption("💡 Try: 'Tum Se Hi', 'Until I Found You', 'Die For You'")# --- TAB 2: STREET FOOD GUIDE ---
+            except:
+                st.error("Elves are on break. Try again.")
+
+# --- TAB 2: FESTIVE FOOD ---
 with tab2:
-    # GIF: Your Custom FOOD Page GIF
-    c1, c2, c3 = st.columns([1,2,1])
-    with c2:
-        st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdG5iOXFsdTFyYjMxaXZrMTA0Y2t6amdpN3d2aHdldWUzbTl2MTF1cyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/QKSXTlCRK0r1N2NnkV/giphy.gif")
-        
-    st.markdown("### 🥟 Street Foodie")
-    st.write("Tasty and Near Sector 48 (Under ₹300).")
-    vibe = st.select_slider("Mood?", options=["Momos 🥟", "Spicy 🌶️", "Cheesy 🧀", "Desi 🥘", "Sweet 🍩"])
-    if st.button("Find Snack 🌯", use_container_width=True):
-        with st.spinner("Scanning street stalls..."):
+    st.markdown("### 🍪 Winter Cravings")
+    st.write("Let's get chubby together this winter.")
+    
+    vibe = st.select_slider("Craving?", options=["Hot Chocolate ☕", "Cheesy Pizza 🍕", "Warm Waffle 🧇", "Spicy Ramen 🍜", "Plum Cake 🍰"])
+    
+    if st.button("Find Winter Treat 🍬", use_container_width=True):
+        with st.spinner("Checking Santa's list..."):
             suggestion = get_food_suggestion(vibe)
             st.success(suggestion)
+            st.balloons()
 
-# --- TAB 3: SPICY SLOTS ---
+# --- TAB 3: NAUGHTY SLOTS (Christmas Ed) ---
 with tab3:
-    # GIF: Your Custom PLAY Page GIF
-    c1, c2, c3 = st.columns([1,2,1])
-    with c2:
-        st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMnBoNjlieXMxNHFxZjd4YzdxZmh6bHluaWxjY3l1b3hneXJoOTU1ZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/4PbHPdnetp3Pi/giphy.gif")
-        
-    st.markdown("### 🎰 Naughty Slots")
-    st.write("Spin to unlock a reward. (18+)")
+    st.markdown("### 🎰 Naughty or Nice?")
     
     spicy_gifts = [
-        "😈 Coupon: I go down on you (No questions asked)",
-        "🧴 Reward: Full Body Oil Massage (30 mins)",
-        "🚿 Reward: Shower Together Voucher",
-        "👙 Reward: You pick my underwear/outfit today",
-        "💋 Reward: 100 Kisses anywhere you want",
-        "👀 Reward: I strip for you (Don't laugh)",
-        "🧞‍♂️ Coupon: One Bedroom 'Wish' (I do anything)",
-        "🍑 Reward: A good hard spanking",
-        "💤 Reward: We sleep naked tonight"
+        "😈 Coupon: I'll be your Santa tonight (Roleplay)",
+        "🧴 Reward: Warm Oil Massage (30 mins)",
+        "🚿 Reward: Steamy Shower Together",
+        "👙 Reward: Wear that outfit I like",
+        "💋 Reward: Mistletoe Kisses (Anywhere)",
+        "🧞‍♂️ Coupon: One 'Get out of Argument' Free Card",
+        "💤 Reward: Cuddle session, no phones"
     ]
     
-    if st.button("SPIN IT! 🎲", use_container_width=True):
-        items = ["😈", "🍑", "🥔", "🫦", "❤️", "🍆"]
-        with st.spinner("Spinning..."):
-            time.sleep(1)
+    if st.button("SPIN THE WHEEL 🍭", use_container_width=True):
+        items = ["🎅", "🎄", "🎁", "🍪", "😈", "☃️"]
         
-        force_win = False
-        if random.random() < 0.40:
-            force_win = True
-            
+        c1, c2, c3 = st.columns(3)
+        with c1: st.write("...rolling...")
+        time.sleep(1)
+        
+        # Biased RNG for Christmas (Higher win rate)
+        force_win = random.random() < 0.50
+        
         if force_win:
-            a = "😈"
-            b = "😈"
-            c = "❤️" 
+            a, b, c = "🎅", "🎅", "😈"
         else:
-            a = random.choice(items)
-            b = random.choice(items)
-            c = random.choice(items)
+            a, b, c = random.choice(items), random.choice(items), random.choice(items)
         
-        st.markdown(f"<h1 style='text-align: center; color: black !important;'>{a} | {b} | {c}</h1>", unsafe_allow_html=True)
+        st.markdown(f"<h1 style='text-align: center; color: #BB2528 !important;'>{a} | {b} | {c}</h1>", unsafe_allow_html=True)
         
-        if a == b == c:
+        if force_win or a==b or b==c:
             st.balloons()
-            prize = "🧞‍♂️ JACKPOT: I do ANYTHING you say today."
-            st.success(f"{prize}")
-        elif force_win:
-             st.info("Lucky Spin! 🥈")
-             st.success("🤫 Reward: Roleplay Night (You choose the script)")
-             st.caption("Valid for 24 hours!")
-        elif a == b or b == c or a == c:
-            st.info("Mini Win! 🥈")
             prize = random.choice(spicy_gifts)
-            st.write(f"You won: **{prize}**")
+            st.success(f"🎁 YOU WON: **{prize}**")
         else:
-            st.error("No Match! 😢 But I still love you.")
-            st.write("Spin again baby.")
+            st.warning("Coal for you! 🌑 (Just kidding, spin again baby)")
 
 # --- TAB 4: VENT ---
 with tab4:
-    # GIF: Keep existing (Cute Capybara with orange)
-    c1, c2, c3 = st.columns([1,2,1])
-    with c2:
-        st.image("https://media.giphy.com/media/Q8OPrlvICzjajupr2T/giphy.gif")
-        
-    st.markdown("### 🛡️ Safe Space")
-    reason = st.selectbox("What's up?", ["Work Stress", "Miss You", "Anxious", "Just Venting"])
-    details = st.text_area("Tell me more:", placeholder="...")
-    if st.button("Send to Shalv 📨", use_container_width=True):
-        st.warning(f"Message sent. I love you.")
-        st.video("https://www.youtube.com/watch?v=f9PKHVesfDc")
-        send_notification(f"🚨 Capybara Alert! {reason}: {details}")
-
-
-st.markdown("---")
-st.markdown("### 🎙️ Send a Voice Note")
-
-audio_file = st.audio_input("Hold to record")
-
-# Store recording as draft
-if audio_file:
-    st.session_state.voice_draft = audio_file.getvalue()
-    st.success("Voice recorded. Tap Send when ready 💌")
-
-# Only show Send button if a draft exists
-if st.session_state.voice_draft:
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("❌ Discard", use_container_width=True):
-            st.session_state.voice_draft = None
-            st.info("Recording discarded")
-
-    with col2:
-        if st.button("📤 Send Voice", use_container_width=True):
-            with st.spinner("Sending your voice..."):
-                raw_url = upload_voice_to_github(
-                    st.session_state.voice_draft,
-                    "webm"  # or wav if you prefer
-                )
-
-                send_notification(
-                    f"🎧 New voice note from Capybara 💖\n\n▶️ Listen:\n{raw_url}"
-                )
-
-            st.session_state.voice_draft = None
-            st.success("Voice note sent 💕")
-
-
-# --- TAB 5: MAP OF US ---
-with tab5:
-    # GIF: Your Custom MAP Page GIF
-    c1, c2, c3 = st.columns([1,2,1])
-    with c2:
-        st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXJlN2xjc3VyZ3Y4dHNzb29udjkzbXdvYmhkNjUyaGg5NXAydDlrZyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vTfFCC3rSfKco/giphy.gif")
-
-    st.markdown("### 📍 Where it all started")
+    st.markdown("### ❄️ Cold Outside, Warm Inside")
+    st.write("Vent here. I'm listening.")
+    reason = st.selectbox("Topic", ["Christmas Stress", "Miss You", "Cold/Sick", "Just Grumpy"])
+    details = st.text_area("Tell Santa Shalv:", placeholder="...")
     
-    # 1. Define Data
+    if st.button("Send Letter 📨", use_container_width=True):
+        st.success("Sent to the North Pole (and my phone). Love you.")
+        send_notification(f"🚨 Capybara Vent ({reason}): {details}")
+
+# --- TAB 5: MAP ---
+with tab5:
+    st.markdown("### 📍 Mistletoe Spots")
+    # (Existing map code reused with Christmas Icon colors)
     map_data = pd.DataFrame({
         'lat': [28.4026, 28.4108, 28.3930],
         'lon': [77.0673, 77.0380, 77.0680],
         'label': ['First Date', 'First Kiss', 'First Meeting'],
-        'color': [
-            [255, 0, 128, 200],  # Pink (Date)
-            [255, 0, 0, 200],    # Red (Kiss)
-            [0, 200, 0, 200]     # Green (Meeting)
-        ]
+        'color': [[255, 215, 0, 200], [255, 0, 0, 200], [0, 128, 0, 200]] # Gold, Red, Green
     })
     
-    # 2. Define Layers
     scatter_layer = pdk.Layer(
         "ScatterplotLayer",
         map_data,
@@ -586,87 +1061,97 @@ with tab5:
         pickable=True,
     )
     
-    text_layer = pdk.Layer(
-        "TextLayer",
-        map_data,
-        get_position='[lon, lat]',
-        get_text='label',
-        get_size=15, 
-        get_color=[0, 0, 0, 255], 
-        get_angle=0,
-        get_text_anchor='"middle"',
-        get_alignment_baseline='"top"'
-    )
-    
-    # 3. View State
-    view_state = pdk.ViewState(
-        latitude=28.405,
-        longitude=77.055,
-        zoom=13,
-        pitch=0
-    )
-    
-    # 4. Render
-    st.pydeck_chart(pdk.Deck(
-        layers=[scatter_layer, text_layer],
-        initial_view_state=view_state,
-        tooltip={"text": "{label}"}
-    ))
-    
-    st.markdown("---")
-    # THE LEGEND
-    st.markdown("### 🗺️ Legend")
-    st.markdown("""
-    <div style='background-color: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; border: 2px solid black;'>
-        <p style='color: green; margin:0; font-size: 16px;'>🟢 <b>First Meeting:</b> Salescode.ai (M3M Urbana); Where I first was fascinated by your Green Top</p>
-        <br>
-        <p style='color: #D63384; margin:0; font-size: 16px;'>🌸 <b>First Date:</b> Trippy Tequila M3M IFC; Where I realized I like you</p>
-        <br>
-        <p style='color: red; margin:0; font-size: 16px;'>🔴 <b>First Kiss:</b> Parking of Vega Schools; Where I realized I love you</p>
-    </div>
-    """, unsafe_allow_html=True)
+    view_state = pdk.ViewState(latitude=28.405, longitude=77.055, zoom=13)
+    st.pydeck_chart(pdk.Deck(layers=[scatter_layer], initial_view_state=view_state))
+    st.caption("Green: Met | Pink: Date | Red: Kiss")
 
-
-# --- TAB 6: MOVIE SUGGESTER ---
+# --- TAB 6: MOVIE ---
 with tab6:
-    c1, c2, c3 = st.columns([1,2,1])
-    with c2:
-        # Cute GIF of people watching TV
-        st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbjVvOWdwZjF2ZXRzaTRsMTB0em8yaXJxcnRwbzVzMmozbzE1enZ2MSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/GYikUbu3p5UdyBhe4r/giphy.gif")
+    st.markdown("### 🎬 Christmas Movie Night")
+    col1, col2 = st.columns(2)
+    with col1:
+        mood = st.selectbox("Vibe", ["Romantic 🥰", "Christmas Cheese 🧀", "Harry Potter Magic ⚡", "Comedy 😂"])
+    with col2:
+        platform = st.selectbox("Where?", ["Netflix", "Amazon Prime", "Disney+"])
+        
+    if st.button("Pick for us 🍿", use_container_width=True):
+        rec = get_movie_suggestion(mood, platform)
+        st.success(rec)
 
-    st.markdown("### 🍿 Movie Night Picker")
-    st.write("Can't decide what to watch? Let my chintu sa bot pick.")
+# --- TAB 7: THE GROUNDBREAKING FEATURE ---
+with tab7:
+    st.markdown("### 💌 The 'Open When' Vault")
+    st.write("These are digital letters for you to open in 2025 when you need me most.")
+    
+    # Custom CSS for the Envelopes
+    st.markdown("""
+    <style>
+    .envelope-btn {
+        width: 100%;
+        padding: 20px;
+        background: #F8F9FA;
+        border: 2px dashed #BB2528;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .envelope-btn:hover {
+        background: #ffe6e6;
+        border-color: #146B3A;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # STATE MANAGEMENT FOR ENVELOPES
+    if "opened_letter" not in st.session_state:
+        st.session_state.opened_letter = None
 
-    # 3 Columns now: Mood | Language | Platform
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
     
     with col1:
-        mood = st.selectbox("Current Mood", [
-            "Romantic 🥰", 
-            "Spicy/Sexy 🌶️", 
-            "Comedy 😂", 
-            "Thriller/Mystery 🕵️‍♀️", 
-            "Horror 👻", 
-            "Feel Good ✨", 
-            "Cry my eyes out 😭"
-        ])
-    
+        if st.button("Open when you MISS me 🥺", key="miss"):
+            st.session_state.opened_letter = "miss"
+        if st.button("Open when you're MAD at me 😡", key="mad"):
+            st.session_state.opened_letter = "mad"
+        if st.button("Open when you're SAD 😢", key="sad"):
+            st.session_state.opened_letter = "sad"
+
     with col2:
-        language = st.selectbox("Language", [
-            "Any", "English", "Hindi", "Korean", "Spanish"
-        ])
+        if st.button("Open for a CONFIDENCE boost 💃", key="conf"):
+            st.session_state.opened_letter = "conf"
+        if st.button("Open on CHRISTMAS Morning 🎄", key="xmas"):
+            st.session_state.opened_letter = "xmas"
+        if st.button("Open when you're HUNGRY 🍟", key="hungry"):
+            st.session_state.opened_letter = "hungry"
 
-    with col3:
-        platform = st.selectbox("Platform", [
-            "Netflix", "Amazon Prime", "Hotstar", "Any"
-        ])
+    st.markdown("---")
+    
+    # DISPLAY THE CONTENT
+    if st.session_state.opened_letter == "miss":
+        st.info("💌 **Message:** Remember that I am just one call away. Look at our photos in the 'Us' tab. I love you more than code. Call me right now.")
+        st.audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3") # Replace with your voice note URL
+        
+    elif st.session_state.opened_letter == "mad":
+        st.warning("💌 **Message:** Okay, I probably messed up. I'm sorry. Take a deep breath. Remember I'm an idiot but I'm *your* idiot. Let's talk it out. 🏳️")
+        st.image("https://media.giphy.com/media/l1J9PVAZTGx0BvZtK/giphy.gif")
+        
+    elif st.session_state.opened_letter == "sad":
+        st.success("💌 **Message:** You are the strongest person I know. This feeling will pass. Put on your favorite pajamas, order that Nutella Waffle, and know that I am holding your hand in spirit.")
+        
+    elif st.session_state.opened_letter == "conf":
+        st.error("💌 **Message:** HAVE YOU SEEN YOURSELF? You are gorgeous. You are smart. You are the main character. Go look in the mirror and wink at yourself.")
+        
+    elif st.session_state.opened_letter == "xmas":
+        st.balloons()
+        st.markdown("## 🎁 MERRY CHRISTMAS BABY!")
+        st.write("My promise to you for 2025: To eat more cheese with you, to listen more, and to make you laugh every single day.")
+        st.write("**P.S. Look in the bottom drawer of your cupboard for your real gift 😉**") # EDIT THIS LOCATION
+        
+    elif st.session_state.opened_letter == "hungry":
+        st.info("💌 **Message:** Why are you reading this? Go open the 'Food' tab and order something! I'm paying (send me the bill).")
 
-    if st.button("Recommend Something 🎞️", use_container_width=True):
-        with st.spinner("Checking Indian libraries..."): 
-            # Pass all 3 variables now
-            suggestion = get_movie_suggestion(mood, platform, language)
-            st.success(suggestion)
-            
-            # Special effects for romantic/spicy moods
-            if "Romantic" in mood or "Sexy" in mood:
-                st.balloons()
+# --- FOOTER ---
+st.markdown("<br><hr><center>Made with ❤️ & ❄️ by Shalv for his Capybara</center>", unsafe_allow_html=True)
