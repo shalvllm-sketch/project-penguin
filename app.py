@@ -777,9 +777,6 @@ def get_food_suggestion(vibe):
         return "Get the Dark Hot Chocolate from Paul's or Colocal. It's a hug in a mug!"
 
 def upload_voice_to_github(audio_bytes, extension):
-    """
-    Restored your original GitHub upload logic
-    """
     filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex}.{extension}"
     path = f"voice/{filename}"
 
@@ -840,9 +837,6 @@ def get_movie_suggestion(mood, platform, language):
         return "Just watch 'Love Actually' on Netflix. It's tradition!"
 
 def youtube_search(query, limit=5):
-    """
-    Restored your original ROBUST search with multiple instances
-    """
     instances = [
         "https://inv.tux.pizza",
         "https://vid.puffyan.us", 
@@ -867,7 +861,7 @@ def youtube_search(query, limit=5):
             
     return []
 
-# --- CUSTOM CSS (CHRISTMAS + MOBILE FIXES) ---
+# --- CUSTOM CSS (CHRISTMAS + MOBILE FIXES + READABILITY) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Quicksand:wght@500;700&display=swap');
@@ -875,7 +869,7 @@ st.markdown("""
     /* --- SNOWFALL ANIMATION --- */
     .snowflake {
         color: #fff;
-        font-size: 1em;
+        font-size: 1.5em; /* Made slightly bigger for effect */
         font-family: Arial, sans-serif;
         text-shadow: 0 0 5px #000;
         position: fixed;
@@ -919,12 +913,15 @@ st.markdown("""
         text-shadow: 2px 2px 0px #146B3A; 
         font-family: 'Mountains of Christmas', cursive;
     }
+    
+    /* MAIN TITLE STYLE - UPDATED FOR READABILITY */
     .title-text {
         font-family: 'Mountains of Christmas', cursive;
         font-size: 70px;
-        color: #FFFFFF;
+        color: #F8B229; /* Gold Color */
         text-align: center;
-        text-shadow: 0 0 10px #FF0000, 0 0 20px #00FF00;
+        /* Stronger dark shadow for contrast */
+        text-shadow: 3px 3px 0px #8B0000, -1px -1px 0px #000000; 
         margin-bottom: 10px;
         animation: float 3s ease-in-out infinite;
     }
@@ -934,7 +931,22 @@ st.markdown("""
         100% { transform: translateY(0px); }
     }
     
-    /* CARDS/TABS */
+    /* --- TABS STYLING (NEW) --- */
+    /* Unselected Tab Labels */
+    div[data-baseweb="tab"] > div > div > p {
+        color: #FFFFFF !important; /* White text for unselected */
+        text-shadow: 1px 1px 2px #000000; /* Small shadow for readability */
+        font-weight: bold;
+        font-family: 'Quicksand', sans-serif;
+    }
+
+    /* Selected Tab Label */
+    div[aria-selected="true"] > div > div > p {
+        color: #F8B229 !important; /* Gold text for selected */
+        text-shadow: 1px 1px 2px #8B0000;
+    }
+    
+    /* CARDS/PANELS */
     .stTabs [data-baseweb="tab-panel"] {
         background: rgba(255, 255, 255, 0.95);
         border-radius: 15px;
@@ -965,13 +977,14 @@ st.markdown("""
         box-shadow: 0px 0px 0px #004d00 !important;
     }
 
+    /* GENERAL TEXT INSIDE WHITE BOXES */
     p, div, label, span, li { 
-        color: #0B3822 !important; 
+        color: #0B3822; /* Dark Green Text - Only inside the white panels */
         font-family: 'Quicksand', sans-serif;
         font-weight: 600; 
     }
     
-    /* --- MOBILE INPUT FIXES (FROM YOUR ORIGINAL CODE) --- */
+    /* --- MOBILE INPUT FIXES --- */
     :root { color-scheme: light !important; }
     input, textarea, select {
         background-color: #ffffff !important;
@@ -1039,7 +1052,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["🏠 Us", "🍫 Food", "�
 with tab1:
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
-        # Christmas Couple GIF
+        # UPDATED CHRISTMAS COUPLE GIF
         st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2F0eGZub2pzeHFzcDl6cWQ4d2pmdWZsNTdpZTQxazZubGpscTAzNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/twsX7xsuU2NPyz1bXV/giphy.gif")
 
     st.markdown("### 💑 Our Christmas Timeline")
