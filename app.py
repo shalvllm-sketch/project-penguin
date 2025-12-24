@@ -709,6 +709,7 @@ from openai import AzureOpenAI
 import base64
 import uuid
 import streamlit.components.v1 as components
+from youtubesearchpython import VideosSearch
 
 # --- CONFIGURATION ---
 st.set_page_config(page_title="Merry Christmas Capybara", page_icon="🎄", layout="centered")
@@ -882,30 +883,27 @@ def get_movie_suggestion(mood, platform, language):
         return "Just watch 'Love Actually' on Netflix. It's tradition!"
 
 def youtube_search(query, limit=5):
-    instances = [
-        "https://inv.tux.pizza",
-        "https://vid.puffyan.us", 
-        "https://yewtu.be",
-        "https://invidious.drgns.space"
-    ]
-    
-    params = {"q": query, "type": "video"}
-    
-    for instance in instances:
-        url = f"{instance}/api/v1/search"
-        try:
-            # 6-second timeout to prevent hanging
-            r = requests.get(url, params=params, timeout=6)
+    try:
+        # Search using the library instead of flaky URLs
+        videosSearch = VideosSearch(query, limit=limit)
+        results = videosSearch.result()
+        
+        if 'result' in results and len(results['result']) > 0:
+            formatted_data = []
+            for video in results['result']:
+                # The library returns 'id', but your app code expects 'videoId'
+                formatted_data.append({
+                    'title': video['title'],
+                    'videoId': video['id'], 
+                    'link': video['link']
+                })
+            return formatted_data
             
-            if r.status_code == 200:
-                data = r.json()
-                if isinstance(data, list) and len(data) > 0:
-                    return data[:limit]
-        except Exception as e:
-            continue # Try the next server
-            
+    except Exception as e:
+        # st.error(f"Search Error: {e}") # Uncomment for debugging
+        return []
+    
     return []
-
 # --- CUSTOM CSS (CHRISTMAS + MOBILE FIXES + READABILITY) ---
 st.markdown("""
     <style>
