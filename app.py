@@ -725,6 +725,50 @@ except:
 
 # --- HELPER FUNCTIONS ---
 
+
+def plan_trip(destination, start_date, end_date, budget, vibe):
+    if not client: return "I'll take you to the moon! (AI Offline)"
+    
+    days = (end_date - start_date).days + 1
+    
+    prompt = (
+        f"Plan a romantic couple's trip to {destination} for {days} days "
+        f"({start_date} to {end_date}). \n"
+        f"Total Budget: ₹{budget} (Strict constraint). \n"
+        f"Vibe: {vibe}. \n"
+        f"Output Guide: \n"
+        f"1. Break down costs (Travel, Stay, Food, Activities) to prove it fits the budget.\n"
+        f"2. Day-by-day itinerary (Morning, Afternoon, Romantic Evening).\n"
+        f"3. Suggest 1 specific romantic hotel/Airbnb within budget.\n"
+        f"4. Keep it realistic for an Indian couple traveling from Delhi/Gurgaon."
+    )
+    
+    try:
+        response = client.chat.completions.create(
+            model=deployment_name,
+            messages=[
+                {"role": "system", "content": "You are an expert travel agent for couples. You plan realistic, budget-friendly, romantic trips."},
+                {"role": "user", "content": prompt}
+            ]
+        )
+        return response.choices[0].message.content
+    except:
+        return "Let's just go to Goa and figure it out there! 🏖️"
+
+def predict_future(month):
+    if not client: return "Outlook good ❤️"
+    try:
+        response = client.chat.completions.create(
+            model=deployment_name,
+            messages=[
+                {"role": "system", "content": "You are a funny, romantic fortune teller predicting the future of a couple (Shalv and Capybara). Be witty, slightly roasting Shalv, but ultimately sweet."},
+                {"role": "user", "content": f"Predict a specific milestone for us in {month} 2026."}
+            ]
+        )
+        return response.choices[0].message.content
+    except:
+        return "You will be happy and loved."
+
 def send_notification(message):
     try:
         requests.post("https://ntfy.sh/shalv_penguin_alert", 
@@ -1046,7 +1090,8 @@ if "voice_draft" not in st.session_state:
 st.markdown('<p class="title-text">Merry Xmas Capybara 🎄</p>', unsafe_allow_html=True)
 
 # TABS
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["🏠 Us", "🍫 Food", "🎰 Play", "💌 Vent", "📍 Map", "🎬 Movie", "🎁 VAULT"])
+# UPDATE THIS LINE IN YOUR CODE
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(["🏠 Us", "🍫 Food", "🎰 Play", "💌 Vent", "📍 Map", "🎬 Movie", "🎁 VAULT", "✈️ Trip", "🔮 Future"])
 
 # --- TAB 1: DASHBOARD ---
 with tab1:
@@ -1371,5 +1416,69 @@ with tab7:
     elif st.session_state.opened_letter == "hungry":
         st.info("💌 **Message:** Why are you reading this? Go open the 'Food' tab and order something! I'm paying (send me the bill).")
 
+
+
+
+
+# --- TAB 8: TRIP PLANNER ---
+with tab8:
+    st.markdown("### ✈️ Let's Run Away")
+    st.caption("Plan our next escape. I'll make it happen.")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        destination = st.text_input("Destination?", placeholder="e.g. Goa, Vietnam, Kerala")
+        budget = st.number_input("Total Budget (₹)", min_value=5000, value=50000, step=5000)
+    with col2:
+        start_d = st.date_input("Start Date", min_value=date.today())
+        end_d = st.date_input("End Date", min_value=date.today())
+        
+    vibe = st.select_slider("Trip Vibe?", options=["Lazy/Relaxed 😴", "Romantic/Luxury 🍷", "Adventure/Active 🧗", "Foodie/Culture 🍜"])
+    
+    if st.button("Plan It Baby 🌍", use_container_width=True):
+        if not destination:
+            st.error("Tell me where we are going!")
+        else:
+            with st.spinner("Calculating flights, hotels, and dinner dates..."):
+                itinerary = plan_trip(destination, start_d, end_d, budget, vibe)
+                
+                # Using a container to make it look like a printed ticket/document
+                with st.container(border=True):
+                    st.markdown(f"### 🎟️ Itinerary: {destination}")
+                    st.markdown(itinerary)
+                    st.caption("Disclaimer: Prices are estimates. Pack your bags!")
+
+# --- TAB 9: FUTURE PREDICTOR ---
+with tab9:
+    st.markdown("### 🔮 Our 2026 Forecast")
+    st.write("Ask the Oracle what happens next year.")
+    
+    month = st.selectbox("Pick a Month", [
+        "January", "February", "March", "April", "May", "June", 
+        "July", "August", "September", "October", "November", "December"
+    ])
+    
+    if st.button("Reveal Prophecy 🧙‍♀️", use_container_width=True):
+        with st.spinner("Gazing into the crystal ball..."):
+            prediction = predict_future(month)
+            
+            st.markdown(
+                f"""
+                <div style="
+                    background-color: #E6E6FA; 
+                    border: 2px solid #4B0082; 
+                    padding: 20px; 
+                    border-radius: 15px; 
+                    text-align: center;">
+                    <h3 style="color: #4B0082 !important;">🔮 {month} 2026 🔮</h3>
+                    <p style="font-size: 18px; color: black;">{prediction}</p>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
+
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with ❤️ & ❄️ by Shalv for his Capybara</center>", unsafe_allow_html=True)
+
+
+
