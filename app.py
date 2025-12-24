@@ -172,19 +172,34 @@ def get_movie_suggestion(mood, platform, language):
 
 def youtube_search(query, limit=5):
     """
-    Free YouTube search using Invidious (no API key)
+    Robust YouTube search using multiple Invidious instances (Failover)
     """
-    url = "https://yewtu.be/api/v1/search"
-    params = {
-        "q": query,
-        "type": "video"
-    }
-    try:
-        r = requests.get(url, params=params, timeout=5)
-        data = r.json()
-        return data[:limit]
-    except:
-        return []
+    # List of public Invidious instances to try
+    instances = [
+        "https://inv.tux.pizza",
+        "https://vid.puffyan.us", 
+        "https://yewtu.be",
+        "https://invidious.drgns.space"
+    ]
+    
+    params = {"q": query, "type": "video"}
+    
+    for instance in instances:
+        url = f"{instance}/api/v1/search"
+        try:
+            # 6-second timeout to prevent hanging
+            r = requests.get(url, params=params, timeout=6)
+            
+            if r.status_code == 200:
+                data = r.json()
+                # Verify we actually got a list of videos
+                if isinstance(data, list) and len(data) > 0:
+                    return data[:limit]
+        except Exception as e:
+            print(f"Error connecting to {instance}: {e}")
+            continue # Try the next server
+            
+    return []
 
 # --- CUSTOM CSS ---
 st.markdown("""
@@ -349,9 +364,10 @@ st.markdown('<p class="title-text">My Capybara ❤️</p>', unsafe_allow_html=Tr
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["🏠 Us", "🍽️ Food", "🎰 Play", "💌 Vent", "📍 Map", "🎬 Watch"])
 
 # --- TAB 1: DASHBOARD ---
+# --- TAB 1: DASHBOARD ---
 with tab1:
     # GIF: Your Custom US Page GIF
-    c1, c2, c3 = st.columns([1,2,1])
+    c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
         st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcTVnOGxnNzIwZG51ZXFocGRtMjljY2g3c2xmc21pc2JhZjNtYWIyOCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/yu7xIHQ2UysA7GwoXx/giphy.gif")
 
@@ -392,6 +408,7 @@ with tab1:
         "Search a song for your current mood 💗",
          placeholder="Song name / Artist / Lyrics"
     )
+    
     if query:
         results = youtube_search(query)
         if results:
@@ -406,8 +423,6 @@ with tab1:
             st.error("Couldn't find that song 😔 Try another?")
     else:
         st.caption("💡 Try: 'Tum Se Hi', 'Until I Found You', 'Die For You'")
-        
-    
 
 # --- TAB 2: STREET FOOD GUIDE ---
 with tab2:
