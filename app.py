@@ -708,6 +708,7 @@ from datetime import date, datetime
 from openai import AzureOpenAI
 import base64
 import uuid
+import streamlit.components.v1 as components
 
 # --- CONFIGURATION ---
 st.set_page_config(page_title="Merry Christmas Capybara", page_icon="🎄", layout="centered")
@@ -1094,6 +1095,7 @@ st.markdown('<p class="title-text">Merry Xmas Capybara 🎄</p>', unsafe_allow_h
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(["🏠 Us", "🍫 Food", "🎰 Play", "💌 Vent", "📍 Map", "🎬 Movie", "🎁 VAULT", "✈️ Trip", "🔮 Future"])
 
 # --- TAB 1: DASHBOARD ---
+# --- TAB 1: DASHBOARD ---
 with tab1:
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
@@ -1101,12 +1103,64 @@ with tab1:
         st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2F0eGZub2pzeHFzcDl6cWQ4d2pmdWZsNTdpZTQxazZubGpscTAzNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/twsX7xsuU2NPyz1bXV/giphy.gif")
 
     st.markdown("### 💑 Our Christmas Timeline")
-    start_date = date(2024, 9, 7) 
-    today = date.today()
-    delta = today - start_date
     
-    st.success(f"We have been naughty & nice for **{delta.days} Days**! ❄️")
+    # --- LIVE TIMER (HTML/JS INJECTION) ---
+    # Start Date: Sept 7, 2024, 9:00 PM (21:00)
     
+    timer_html = """
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap');
+        .timer-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 3px solid #BB2528;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            font-family: 'Quicksand', sans-serif;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        .timer-text {
+            font-size: 24px;
+            color: #0B3822;
+            font-weight: bold;
+            margin: 0;
+        }
+        .timer-label {
+            font-size: 14px;
+            color: #BB2528;
+            margin-top: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+    
+    <div class="timer-container">
+        <div id="timer" class="timer-text">Loading...</div>
+        <div class="timer-label">Since We Started (Sept 7, 2024 • 9:00 PM)</div>
+    </div>
+
+    <script>
+    // Set the date we're counting from: Sept 7, 2024 21:00:00
+    var startDate = new Date("September 7, 2024 21:00:00").getTime();
+
+    var x = setInterval(function() {
+        var now = new Date().getTime();
+        var distance = now - startDate;
+
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById("timer").innerHTML = 
+            days + "d : " + hours + "h : " + minutes + "m : " + seconds + "s ";
+    }, 1000);
+    </script>
+    """
+    
+    # Render the HTML
+    components.html(timer_html, height=130)
+
     st.markdown("---")
     
     st.markdown("### 📸 Memories")
@@ -1147,7 +1201,6 @@ with tab1:
                 st.error("Elves couldn't find it. Try 'Jingle Bell Rock'")
     else:
         st.caption("Try: 'Mistletoe Justin Bieber', 'Last Christmas', 'Snowman Sia'")
-
 # --- TAB 2: FESTIVE FOOD ---
 with tab2:
     st.markdown("### 🍪 Winter Cravings")
