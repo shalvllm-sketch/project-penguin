@@ -11,8 +11,6 @@ import base64
 import uuid
 from datetime import datetime
 
-
-
 # --- CONFIGURATION ---
 st.set_page_config(page_title="For My Capybara", page_icon="🥔", layout="centered")
 
@@ -172,6 +170,21 @@ def get_movie_suggestion(mood, platform, language):
     except:
         return "Just watch 'Bridgerton' on Netflix. It hits the spot!"
 
+def youtube_search(query, limit=5):
+    """
+    Free YouTube search using Invidious (no API key)
+    """
+    url = "https://yewtu.be/api/v1/search"
+    params = {
+        "q": query,
+        "type": "video"
+    }
+    try:
+        r = requests.get(url, params=params, timeout=5)
+        data = r.json()
+        return data[:limit]
+    except:
+        return []
 
 # --- CUSTOM CSS ---
 st.markdown("""
@@ -373,15 +386,28 @@ with tab1:
         st.rerun()
         
     st.markdown("---")
+    
     st.markdown("### 🎵 Jukebox")
-    songs = {
-        "Mere Bina (Crook)": "https://www.youtube.com/watch?v=f9PKHVesfDc",
-        "I Wanna Be Yours (AM)": "https://www.youtube.com/watch?v=nyuo9-OjNNg",
-        "Die For You (Weeknd)": "https://www.youtube.com/watch?v=2AH5l-vrY9Q",
-        "Take Me to the River": "https://www.youtube.com/watch?v=uEKVZQCEBUc" 
-    }
-    selected_song = st.selectbox("Vibe Check:", list(songs.keys()))
-    st.video(songs[selected_song])
+    query = st.text_input(
+        "Search a song for your current mood 💗",
+         placeholder="Song name / Artist / Lyrics"
+    )
+    if query:
+        results = youtube_search(query)
+        if results:
+            options = {
+                f"{v['title']} — {v['author']}": f"https://www.youtube.com/watch?v={v['videoId']}"
+                for v in results
+            }
+            
+            selected = st.selectbox("Pick one 🎶", options.keys())
+            st.video(options[selected])
+        else:
+            st.error("Couldn't find that song 😔 Try another?")
+    else:
+        st.caption("💡 Try: 'Tum Se Hi', 'Until I Found You', 'Die For You'")
+        
+    
 
 # --- TAB 2: STREET FOOD GUIDE ---
 with tab2:
@@ -470,8 +496,6 @@ with tab4:
         st.warning(f"Message sent. I love you.")
         st.video("https://www.youtube.com/watch?v=f9PKHVesfDc")
         send_notification(f"🚨 Capybara Alert! {reason}: {details}")
-
-
 
 
 st.markdown("---")
@@ -581,9 +605,6 @@ with tab5:
     """, unsafe_allow_html=True)
 
 
-
-
-# --- TAB 6: MOVIE SUGGESTER ---
 # --- TAB 6: MOVIE SUGGESTER ---
 with tab6:
     c1, c2, c3 = st.columns([1,2,1])
