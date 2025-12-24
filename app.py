@@ -1117,44 +1117,65 @@ with tab2:
             st.balloons()
 
 # --- TAB 3: NAUGHTY SLOTS (Christmas Ed) ---
+# --- TAB 3: NAUGHTY SLOTS (Rigged & 18+) ---
 with tab3:
     st.markdown("### 🎰 Naughty or Nice?")
+    st.caption("Warning: 18+ Content Inside 🌶️")
     
+    # THE RIGGED 18+ PRIZE LIST
     spicy_gifts = [
-        "😈 Coupon: I'll be your Santa tonight (Roleplay)",
-        "🧴 Reward: Warm Oil Massage (30 mins)",
-        "🚿 Reward: Steamy Shower Together",
-        "👙 Reward: Wear that outfit I like",
-        "💋 Reward: Mistletoe Kisses (Anywhere)",
-        "🧞‍♂️ Coupon: One 'Get out of Argument' Free Card",
-        "💤 Reward: Cuddle session, no phones"
+        "👅 Reward: Oral Pleasure (I go down on you tonight)",
+        "🚿 Reward: Steamy Shower Sex",
+        "⛓️ Coupon: '50 Shades' Night (Tie me up or I tie you up)",
+        "🐇 Reward: A Quickie (Right here, Right now)",
+        "🧴 Reward: Full Body Oil Massage (Happy Ending included)",
+        "🍑 Reward: Face Sitting Pass (Use anytime)",
+        "🍆 Reward: I take care of you (No reciprocation needed)",
+        "👙 Reward: Strip Tease (I take it ALL off)"
     ]
     
     if st.button("SPIN THE WHEEL 🍭", use_container_width=True):
-        items = ["🎅", "🎄", "🎁", "🍪", "😈", "☃️"]
+        # 1. THE RIG: We remove the 'loss' variables. 
+        # It is now mathematically impossible to lose.
         
-        with st.spinner("Spinning..."):
-            time.sleep(1)
+        with st.spinner("Getting naughty..."):
+            time.sleep(1.5) # Build suspense
         
-        # Biased RNG for Christmas (Higher win rate)
-        force_win = random.random() < 0.50
+        # 2. VISUALS: Only spicy icons
+        winning_combos = [
+            ("😈", "😈", "😈"),
+            ("🍑", "🍑", "🍑"),
+            ("🍆", "🍆", "🍆"),
+            ("👅", "wc", "👅"), # wildcards
+            ("🍒", "🍒", "🍒")
+        ]
         
-        if force_win:
-            a, b, c = "🎅", "🎅", "😈"
-        else:
-            a, b, c = random.choice(items), random.choice(items), random.choice(items)
+        # Pick a random winning combo
+        a, b, c = random.choice(winning_combos)
         
-        st.markdown(f"<h1 style='text-align: center; color: #BB2528 !important;'>{a} | {b} | {c}</h1>", unsafe_allow_html=True)
+        # Display the Slots
+        st.markdown(f"<h1 style='text-align: center; color: #BB2528 !important; font-size: 60px;'>{a} | {b} | {c}</h1>", unsafe_allow_html=True)
         
-        if force_win:
-            st.balloons()
-            st.success("🎅 JACKPOT: You get to pick ANY gift from the list!")
-        elif a == b or b == c or a == c:
-            st.info("Nice! 🥈")
-            prize = random.choice(spicy_gifts)
-            st.success(f"🎁 YOU WON: **{prize}**")
-        else:
-            st.warning("Coal for you! 🌑 (Just kidding, spin again baby)")
+        # 3. THE PAYOUT
+        st.balloons()
+        prize = random.choice(spicy_gifts)
+        
+        # The Result Card
+        st.markdown(
+            f"""
+            <div style="
+                background-color: #ffe6e6; 
+                border: 2px solid #ff0000; 
+                padding: 20px; 
+                border-radius: 10px; 
+                text-align: center;">
+                <h3 style="color: #ff0000 !important; margin: 0;">🎉 JACKPOT 🎉</h3>
+                <h2 style="color: black !important; margin-top: 10px;">{prize}</h2>
+                <p style="font-size: 12px; color: grey;">(Screenshot this to redeem)</p>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
 
 # --- TAB 4: VENT & VOICE ---
 with tab4:
