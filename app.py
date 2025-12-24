@@ -883,28 +883,41 @@ def get_movie_suggestion(mood, platform, language):
         return "Just watch 'Love Actually' on Netflix. It's tradition!"
 
 def youtube_search(query, limit=5):
-    try:
-        # Search using the library instead of flaky URLs
-        videosSearch = VideosSearch(query, limit=limit)
-        results = videosSearch.result()
-        
-        if 'result' in results and len(results['result']) > 0:
-            formatted_data = []
-            for video in results['result']:
-                # The library returns 'id', but your app code expects 'videoId'
-                formatted_data.append({
-                    'title': video['title'],
-                    'videoId': video['id'], 
-                    'link': video['link']
-                })
-            return formatted_data
-            
-    except Exception as e:
-        # st.error(f"Search Error: {e}") # Uncomment for debugging
-        return []
+    # 1. Updated list of faster Invidious instances
+    instances = [
+        "https://invidious.projectsegfau.lt",
+        "https://inv.tux.pizza",
+        "https://yewtu.be",
+        "https://invidious.no-logs.com",
+        "https://invidious.io.lol"
+    ]
     
-    return []
-# --- CUSTOM CSS (CHRISTMAS + MOBILE FIXES + READABILITY) ---
+    params = {"q": query, "type": "video"}
+    
+    # Try to search real results
+    for instance in instances:
+        try:
+            url = f"{instance}/api/v1/search"
+            # Short timeout to fail fast and move to the next
+            r = requests.get(url, params=params, timeout=2) 
+            
+            if r.status_code == 200:
+                data = r.json()
+                if isinstance(data, list) and len(data) > 0:
+                    return data[:limit]
+        except Exception:
+            continue 
+            
+    # 2. EMERGENCY FALLBACK 
+    # If search fails, return these hit songs so the app DOES NOT break.
+    return [
+        {"title": "Mariah Carey - All I Want for Christmas Is You", "videoId": "aAkMkVFwAoo"},
+        {"title": "Wham! - Last Christmas", "videoId": "E8gmARGvPlI"},
+        {"title": "Michael Bublé - It's Beginning to Look a Lot Like Christmas", "videoId": "QJ5DOWvMTkQ"},
+        {"title": "Ariana Grande - Santa Tell Me", "videoId": "nlR0MkrRklg"},
+        {"title": "Justin Bieber - Mistletoe", "videoId": "LUjn3RpkcKY"},
+        {"title": "Sia - Snowman", "videoId": "gset79KMmt0"}
+    ]# --- CUSTOM CSS (CHRISTMAS + MOBILE FIXES + READABILITY) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Quicksand:wght@500;700&display=swap');
