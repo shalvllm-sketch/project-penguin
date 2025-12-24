@@ -1188,6 +1188,7 @@ with tab3:
         # We customize the message slightly based on who is spinning
         target = "YOU" if "Her" in player_turn else "HIM"
         
+        # --- THIS IS THE CRITICAL FIX: unsafe_allow_html=True ---
         st.markdown(
             f"""
             <div style="
