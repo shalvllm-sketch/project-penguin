@@ -4,3 +4,4 @@ requests
 pandas
 pydeck
 youtube-search
+youtube-search-python
