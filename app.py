@@ -1,4 +1,4 @@
-# import streamlit as st
+w# import streamlit as st
 # import random
 # import time
 # import requests
@@ -1250,11 +1250,11 @@ with tab3:
         ("🤫", "DIRTY", "Whisper: Whisper exactly what you want to do to the other person in filthy detail."),
         ("🐕", "ACTION", "Doggy Style: Deep and hard. Hair pulling allowed if consensual."),
         ("🤠", "ACTION", "Cowgirl / Reverse: Receiver lies down. Spinner gets on top and sets the pace."),
-        ("🥄", "INTIMATE", "The Spoon: Sex on sides. Slow, deep, and intimate. Maximum skin contact."),
+        ("🥄", "INTIMATE", "The Finger: Finger the other person as per your choice (with due consent)."),
         ("♋", "MUTUAL", "69: Mutual oral pleasure. Race to see who finishes first."),
         ("🚿", "WET", "Shower Sex: Get the water running. Soap each other up and get to it."),
         ("🐇", "QUICK", "The Quickie: Pants down, right here, right now. Fast as possible."),
-        ("🪞", "VIEW", "Vanity: Sex in front of a mirror (or camera mode) so we can watch."),
+        ("🪞", "VIEW", "Vanity: Make out and get intimate in front of a mirror (or camera mode) so we can watch."),
         ("😈", "DOM", "Yes Sir/Ma'am: For the next hour, the Spinner is the Slave. The other is the Master."),
         ("👔", "KINK", "Restraint: Use a tie, scarf, or cuffs. Tie the Spinner to the bed."),
         ("👋", "IMPACT", "Spanking: Bend over. 10 solid spanks. Make them count."),
@@ -1264,7 +1264,7 @@ with tab3:
         ("🃏", "WILD", "Joker Card: The Spinner chooses ANY position or act they crave right now."),
         ("🎲", "CHANCE", "Roleplay: We are strangers meeting at a bar. Spinner has to pick the other up."),
         ("📸", "RISKY", "The Tape: We film ourselves (and delete it immediately after watching)."),
-        ("🤫", "QUIET", "Silent Challenge: We have sex without making a single noise. First to moan loses.")
+        ("🤫", "WALK THE TALK", "Tell the other person about your kink, or fetish. Do not lie. And then perform.")
     ]
     
     # THE RIGGED ITEM (Stored separately to force it)
