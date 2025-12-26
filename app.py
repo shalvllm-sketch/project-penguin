@@ -1,4 +1,4 @@
-w# import streamlit as st
+# import streamlit as st
 # import random
 # import time
 # import requests
@@ -694,9 +694,6 @@ w# import streamlit as st
 
 
 
-
-
-
 import streamlit as st
 import random
 import time
@@ -709,10 +706,9 @@ from openai import AzureOpenAI
 import base64
 import uuid
 import streamlit.components.v1 as components
-from youtubesearchpython import VideosSearch
 
 # --- CONFIGURATION ---
-st.set_page_config(page_title="Merry Christmas Capybara", page_icon="🎄", layout="centered")
+st.set_page_config(page_title="Pookie Dashboard 💖", page_icon="✨", layout="centered")
 
 # --- AI SETUP ---
 try:
@@ -725,8 +721,7 @@ try:
 except:
     client = None
 
-# --- HELPER FUNCTIONS ---
-
+# --- HELPER FUNCTIONS (UPDATED FOR ROMANCE THEME) ---
 
 def plan_trip(destination, start_date, end_date, budget, vibe):
     if not client: return "I'll take you to the moon! (AI Offline)"
@@ -779,18 +774,18 @@ def send_notification(message):
         pass
 
 def get_ai_love_note():
-    if not client: return "All I want for Christmas is you! ❤️ (AI Offline)"
+    if not client: return "I love you to the moon and back! ❤️ (AI Offline)"
     try:
         response = client.chat.completions.create(
             model=deployment_name,
             messages=[
-                {"role": "system", "content": "You are a romantic boyfriend named Shalv. Write a 1-sentence Christmas-themed love note for your girlfriend 'Capybara'. Mention mistletoe, snow, or hot cocoa. Use emojis."},
+                {"role": "system", "content": "You are a romantic boyfriend named Shalv. Write a 1-sentence intense love note for your girlfriend 'Capybara'. Be poetic but modern. Use emojis."},
                 {"role": "user", "content": "Write a note for today."}
             ]
         )
         return response.choices[0].message.content
     except:
-        return "You are the star on my Christmas tree 🌟"
+        return "You are my favorite notification 🌟"
 
 def get_food_suggestion(vibe):
     if not client: return "Hot Chocolate at Starbucks! (AI Offline)"
@@ -800,21 +795,21 @@ def get_food_suggestion(vibe):
         "USER PROFILE (CAPYBARA): \n"
         "- LOVES: Cheesecake, Nutella Waffles, Hot Chocolate, Cheese, Crispy textures.\n"
         "- HATES: Red Velvet.\n"
-        "- SEASON: It is Christmas/Winter. Suggest cozy, warm, festive foods."
+        "- CONTEXT: A romantic date or comfort food. Suggest places in Gurgaon (Sector 48/Cyber Hub)."
     )
 
     try:
         prompt_text = (
-            f"Suggest 1 specific Christmas/Winter treat ({vibe}) near Sector 48 Gurgaon. "
-            f"Cost under ₹500. \n"
+            f"Suggest 1 specific food treat ({vibe}) near Gurgaon. "
+            f"Cost under ₹800. \n"
             f"{her_tastes}\n"
-            f"Format: 'Dish Name' at 'Restaurant Name'. Add a cozy reason."
+            f"Format: 'Dish Name' at 'Restaurant Name'. Add a romantic reason."
         )
         
         response = client.chat.completions.create(
             model=deployment_name,
             messages=[
-                {"role": "system", "content": "You are a Gurgaon food expert helping a boyfriend treat his girl for Christmas."},
+                {"role": "system", "content": "You are a Gurgaon food expert helping a boyfriend treat his girl."},
                 {"role": "user", "content": prompt_text}
             ]
         )
@@ -829,7 +824,7 @@ def upload_voice_to_github(audio_bytes, extension):
     url = f"https://api.github.com/repos/{st.secrets['GITHUB_REPO']}/contents/{path}"
 
     payload = {
-        "message": "🎧 New voice note from Capybara (Xmas Edition)",
+        "message": "🎧 New voice note from Capybara (Love Edition)",
         "content": base64.b64encode(audio_bytes).decode("utf-8"),
         "branch": st.secrets["GITHUB_BRANCH"]
     }
@@ -854,19 +849,13 @@ def upload_voice_to_github(audio_bytes, extension):
     return raw_url
 
 def get_movie_suggestion(mood, platform, language):
-    if not client: return "Watch 'Home Alone' or 'The Holiday' (AI Offline)"
+    if not client: return "Watch 'About Time' or 'Jab We Met' (AI Offline)"
     
-    # Logic to handle Christmas vibes
-    if "Christmas" in mood:
-        mood_context = "Festive, Cozy, Holiday Spirit, Maybe a bit cheesy"
-    else:
-        mood_context = mood
-
     try:
         prompt_text = (
             f"Suggest 1 specific Movie on {platform} (India Library). "
-            f"Mood: {mood_context}. Language: {language}. "
-            f"It MUST be perfect for a couple watching during the holidays. "
+            f"Mood: {mood}. Language: {language}. "
+            f"It MUST be perfect for a couple watching on a date night. "
             f"Give a 1-sentence cheeky reason why we should cuddle and watch it."
         )
         
@@ -880,7 +869,7 @@ def get_movie_suggestion(mood, platform, language):
         )
         return response.choices[0].message.content
     except:
-        return "Just watch 'Love Actually' on Netflix. It's tradition!"
+        return "Just watch 'Yeh Jawaani Hai Deewani'. It's a classic!"
 
 def youtube_search(query, limit=5):
     # Updated list of servers to try
@@ -903,78 +892,79 @@ def youtube_search(query, limit=5):
         except:
             continue
             
-    return [] # Returns empty so we can show your custom error
-        
-        # 2. EMERGENCY FALLBACK 
-    # If search fails, return these hit songs so the app DOES NOT break.
+    # 2. EMERGENCY FALLBACK (UPDATED FOR ROMANCE)
     return [
-        {"title": "Mariah Carey - All I Want for Christmas Is You", "videoId": "aAkMkVFwAoo"},
-        {"title": "Wham! - Last Christmas", "videoId": "E8gmARGvPlI"},
-        {"title": "Michael Bublé - It's Beginning to Look a Lot Like Christmas", "videoId": "QJ5DOWvMTkQ"},
-        {"title": "Ariana Grande - Santa Tell Me", "videoId": "nlR0MkrRklg"},
-        {"title": "Justin Bieber - Mistletoe", "videoId": "LUjn3RpkcKY"},
-        {"title": "Sia - Snowman", "videoId": "gset79KMmt0"}
-    ]# --- CUSTOM CSS (CHRISTMAS + MOBILE FIXES + READABILITY) ---
+        {"title": "Ed Sheeran - Perfect", "videoId": "2Vv-BfVoq4g"},
+        {"title": "Arijit Singh - Tum Hi Ho", "videoId": "IJq0yyWug1k"},
+        {"title": "AP Dhillon - With You", "videoId": "N_Y3J1sJ2Jw"},
+        {"title": "Taylor Swift - Lover", "videoId": "-BjZmE2gtdo"},
+        {"title": "Diljit Dosanjh - Lover", "videoId": "mHj0W9c8dIQ"}
+    ]
+
+# --- CUSTOM CSS (STARS + ROMANCE THEME) ---
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Quicksand:wght@500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@500;700&display=swap');
 
-    /* --- SNOWFALL ANIMATION --- */
-    .snowflake {
-        color: #fff;
-        font-size: 1.5em; /* Made slightly bigger for effect */
+    /* --- STAR ANIMATION (GOLDEN FLOWING STARS) --- */
+    .star {
+        color: #FFD700; /* Gold */
+        font-size: 1.5em;
         font-family: Arial, sans-serif;
-        text-shadow: 0 0 5px #000;
+        text-shadow: 0 0 5px #ffeb3b;
         position: fixed;
         top: -10%;
         z-index: 9999;
         -webkit-user-select: none;
         user-select: none;
         cursor: default;
-        animation-name: snowflakes-fall, snowflakes-shake;
-        animation-duration: 10s, 3s;
+        animation-name: star-fall, star-twinkle;
+        animation-duration: 12s, 3s;
         animation-timing-function: linear, ease-in-out;
         animation-iteration-count: infinite, infinite;
         animation-play-state: running, running;
         pointer-events: none;
     }
-    @keyframes snowflakes-fall {
-        0% {top: -10%;}
-        100% {top: 100%;}
+    @keyframes star-fall {
+        0% {top: -10%; transform: rotate(0deg);}
+        100% {top: 100%; transform: rotate(360deg);}
     }
-    @keyframes snowflakes-shake {
-        0%, 100% {transform: translateX(0);}
-        50% {transform: translateX(80px);}
+    @keyframes star-twinkle {
+        0% {opacity: 0.8; transform: scale(1);}
+        50% {opacity: 0.4; transform: scale(0.8);}
+        100% {opacity: 0.8; transform: scale(1);}
     }
-    .snowflake:nth-of-type(0) {left: 1%; animation-delay: 0s, 0s;}
-    .snowflake:nth-of-type(1) {left: 10%; animation-delay: 1s, 1s;}
-    .snowflake:nth-of-type(2) {left: 20%; animation-delay: 6s, .5s;}
-    .snowflake:nth-of-type(3) {left: 30%; animation-delay: 4s, 2s;}
-    .snowflake:nth-of-type(4) {left: 40%; animation-delay: 2s, 2s;}
-    .snowflake:nth-of-type(5) {left: 50%; animation-delay: 8s, 3s;}
-    .snowflake:nth-of-type(6) {left: 60%; animation-delay: 6s, 2s;}
     
-    /* --- CHRISTMAS THEME --- */
+    /* Randomize star positions */
+    .star:nth-of-type(1) {left: 5%; animation-delay: 0s, 0s; font-size: 1em;}
+    .star:nth-of-type(2) {left: 15%; animation-delay: 4s, 1s; font-size: 1.8em;}
+    .star:nth-of-type(3) {left: 25%; animation-delay: 2s, 0.5s;}
+    .star:nth-of-type(4) {left: 40%; animation-delay: 8s, 2s; color: #FFA500;}
+    .star:nth-of-type(5) {left: 60%; animation-delay: 6s, 1.5s;}
+    .star:nth-of-type(6) {left: 75%; animation-delay: 3s, 2.5s; font-size: 1.2em;}
+    .star:nth-of-type(7) {left: 90%; animation-delay: 1s, 3s; color: #FFFACD;}
+    
+    /* --- ROMANCE THEME BACKGROUND --- */
     .stApp {
-        background: linear-gradient(135deg, #165B33 0%, #0B3822 50%, #BB2528 100%);
+        /* Deep Maroon to Romantic Gold Gradient */
+        background: linear-gradient(135deg, #2b0c0d 0%, #6d1b1e 40%, #c47679 100%);
         background-attachment: fixed;
     }
     
     /* FONTS & HEADERS */
     h1, h2, h3 { 
-        color: #F8B229 !important; /* Gold */
-        text-shadow: 2px 2px 0px #146B3A; 
-        font-family: 'Mountains of Christmas', cursive;
+        color: #FFD700 !important; /* Gold */
+        text-shadow: 2px 2px 0px #3d0000; 
+        font-family: 'Dancing Script', cursive;
     }
     
-    /* MAIN TITLE STYLE - UPDATED FOR READABILITY */
+    /* MAIN TITLE STYLE */
     .title-text {
-        font-family: 'Mountains of Christmas', cursive;
+        font-family: 'Dancing Script', cursive;
         font-size: 70px;
-        color: #F8B229; /* Gold Color */
+        color: #FFD700; 
         text-align: center;
-        /* Stronger dark shadow for contrast */
-        text-shadow: 3px 3px 0px #8B0000, -1px -1px 0px #000000; 
+        text-shadow: 3px 3px 0px #3d0000, 0px 0px 10px #ff0000; 
         margin-bottom: 10px;
         animation: float 3s ease-in-out infinite;
     }
@@ -984,19 +974,17 @@ st.markdown("""
         100% { transform: translateY(0px); }
     }
     
-    /* --- TABS STYLING (NEW) --- */
-    /* Unselected Tab Labels */
+    /* --- TABS STYLING --- */
     div[data-baseweb="tab"] > div > div > p {
-        color: #FFFFFF !important; /* White text for unselected */
-        text-shadow: 1px 1px 2px #000000; /* Small shadow for readability */
+        color: #FFDDE1 !important; 
+        text-shadow: 1px 1px 2px #000000; 
         font-weight: bold;
         font-family: 'Quicksand', sans-serif;
     }
 
-    /* Selected Tab Label */
     div[aria-selected="true"] > div > div > p {
-        color: #F8B229 !important; /* Gold text for selected */
-        text-shadow: 1px 1px 2px #8B0000;
+        color: #FFD700 !important; /* Gold text for selected */
+        text-shadow: 0px 0px 5px #FFD700;
     }
     
     /* CARDS/PANELS */
@@ -1004,73 +992,56 @@ st.markdown("""
         background: rgba(255, 255, 255, 0.95);
         border-radius: 15px;
         padding: 20px;
-        border: 4px solid #BB2528;
-        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        border: 2px solid #FFD700;
+        box-shadow: 0 0 15px rgba(255, 105, 180, 0.4);
     }
     
     /* BUTTONS */
     .stButton > button {
-        background-color: #BB2528 !important;
-        color: white !important;
-        border: 2px solid #F8B229 !important;
+        background-color: #800020 !important; /* Burgundy */
+        color: #FFD700 !important; /* Gold Text */
+        border: 2px solid #FFD700 !important;
         border-radius: 20px;
         font-family: 'Quicksand', sans-serif;
         font-weight: bold;
         text-transform: uppercase;
-        box-shadow: 0px 5px 0px #8B0000 !important;
+        box-shadow: 0px 4px 0px #4a0010 !important;
         transition: all 0.2s;
     }
     .stButton > button:hover {
-        background-color: #146B3A !important;
+        background-color: #a31545 !important;
         transform: translateY(-2px);
-        box-shadow: 0px 7px 0px #004d00 !important;
+        box-shadow: 0px 6px 0px #4a0010 !important;
     }
     .stButton > button:active {
         transform: translateY(2px);
-        box-shadow: 0px 0px 0px #004d00 !important;
+        box-shadow: 0px 0px 0px #4a0010 !important;
     }
 
     /* GENERAL TEXT INSIDE WHITE BOXES */
     p, div, label, span, li { 
-        color: #0B3822; /* Dark Green Text - Only inside the white panels */
+        color: #4a0010; /* Dark Burgundy Text */
         font-family: 'Quicksand', sans-serif;
         font-weight: 600; 
     }
     
-    /* --- MOBILE INPUT FIXES --- */
-    :root { color-scheme: light !important; }
+    /* INPUT FIELDS */
     input, textarea, select {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-        border: 2px solid #146B3A !important;
-    }
-    div[data-baseweb="select"] > div {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-        border-color: #146B3A !important;
-    }
-    div[data-baseweb="popover"], div[data-baseweb="menu"] {
-        background-color: #ffffff !important;
-        border: 2px solid #146B3A !important;
-    }
-    div[data-baseweb="option"] {
-        background-color: #ffffff !important;
-        color: #000000 !important; 
-    }
-    div[data-baseweb="option"]:hover {
-        background-color: #ffe6e6 !important;
-        color: #000000 !important;
+        background-color: #fff0f5 !important; /* Lavender Blush */
+        color: #4a0010 !important;
+        border: 1px solid #800020 !important;
     }
     
     #MainMenu, footer, header {visibility: hidden;}
     </style>
     
-    <div class="snowflake">❅</div>
-    <div class="snowflake">❆</div>
-    <div class="snowflake">❅</div>
-    <div class="snowflake">❆</div>
-    <div class="snowflake">❅</div>
-    <div class="snowflake">❆</div>
+    <div class="star">★</div>
+    <div class="star">✨</div>
+    <div class="star">★</div>
+    <div class="star">✨</div>
+    <div class="star">★</div>
+    <div class="star">✨</div>
+    <div class="star">★</div>
     """, unsafe_allow_html=True)
 
 # --- AUTHENTICATION ---
@@ -1079,48 +1050,44 @@ if "authenticated" not in st.session_state:
 
 if not st.session_state.authenticated:
     st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown('<p class="title-text">Ho Ho Ho! 🎅</p>', unsafe_allow_html=True)
+    st.markdown('<p class="title-text">Welcome Capybara 💖</p>', unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1,2,1])
     with col2:
-        st.info("Santa Shalv has a locked gift for you.")
+        st.info("This area is restricted to Shalv's favorite person.")
         password = st.text_input("Enter Secret Password", type="password", placeholder="Hint: Who are you?")
-        if st.button("Unwrap Gift 🎁", use_container_width=True):
+        if st.button("Unlock My Heart 🔓", use_container_width=True):
             if password.lower() == "capybara": 
                 st.session_state.authenticated = True
                 st.rerun()
             elif password:
-                st.error("Naughty list! Try again 😈")
+                st.error("Wrong password, but you're still cute. Try again.")
     st.stop() 
 
 # --- MAIN APP ---
 if "voice_draft" not in st.session_state:
     st.session_state.voice_draft = None
 
-st.markdown('<p class="title-text">Merry Xmas Capybara 🎄</p>', unsafe_allow_html=True)
+st.markdown('<p class="title-text">Hey Beautiful ✨</p>', unsafe_allow_html=True)
 
 # TABS
-# UPDATE THIS LINE IN YOUR CODE
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(["🏠 Us", "🍫 Food", "🎰 Play", "💌 Vent", "📍 Map", "🎬 Movie", "🎁 VAULT", "✈️ Trip", "🔮 Future"])
 
-# --- TAB 1: DASHBOARD ---
 # --- TAB 1: DASHBOARD ---
 with tab1:
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
-        # UPDATED CHRISTMAS COUPLE GIF
-        st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2F0eGZub2pzeHFzcDl6cWQ4d2pmdWZsNTdpZTQxazZubGpscTAzNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/twsX7xsuU2NPyz1bXV/giphy.gif")
+        # UPDATED ROMANTIC GIF
+        st.image("https://media.giphy.com/media/l4pTfx2qLszoacZRS/giphy.gif") # Cute bear hug or similar
 
-    st.markdown("### 💑 Our Christmas Timeline")
+    st.markdown("### 💑 Our Love Timeline")
     
     # --- LIVE TIMER (HTML/JS INJECTION) ---
-    # Start Date: Sept 7, 2024, 9:00 PM (21:00)
-    
     timer_html = """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap');
         .timer-container {
             background-color: rgba(255, 255, 255, 0.9);
-            border: 3px solid #BB2528;
+            border: 2px solid #FFD700;
             border-radius: 15px;
             padding: 20px;
             text-align: center;
@@ -1129,13 +1096,13 @@ with tab1:
         }
         .timer-text {
             font-size: 24px;
-            color: #0B3822;
+            color: #800020;
             font-weight: bold;
             margin: 0;
         }
         .timer-label {
             font-size: 14px;
-            color: #BB2528;
+            color: #d4af37;
             margin-top: 5px;
             font-weight: bold;
             text-transform: uppercase;
@@ -1144,11 +1111,10 @@ with tab1:
     
     <div class="timer-container">
         <div id="timer" class="timer-text">Loading...</div>
-        <div class="timer-label">Since We Started (Sept 7, 2024 • 9:00 PM)</div>
+        <div class="timer-label">Loving You Since (Sept 7, 2024 • 9:00 PM)</div>
     </div>
 
     <script>
-    // Set the date we're counting from: Sept 7, 2024 21:00:00
     var startDate = new Date("September 7, 2024 21:00:00").getTime();
 
     var x = setInterval(function() {
@@ -1165,40 +1131,37 @@ with tab1:
     }, 1000);
     </script>
     """
-    
-    # Render the HTML
     components.html(timer_html, height=130)
 
     st.markdown("---")
     
-    st.markdown("### 📸 Memories")
+    st.markdown("### 📸 Us")
     photo_dir = "photos"
     if os.path.exists(photo_dir) and len(os.listdir(photo_dir)) > 0:
         images = [f for f in os.listdir(photo_dir) if f.endswith(('.png', '.jpg', '.jpeg', '.webp'))]
         if images:
             random_image = random.choice(images)
-            st.image(f"{photo_dir}/{random_image}", caption="Us ❤️")
+            st.image(f"{photo_dir}/{random_image}", caption="My Forever ❤️")
             if st.button("Next Pic 🔄", use_container_width=True):
                 st.rerun()
     else:
         st.info("💡 (Upload photos to GitHub to see them here!)")
 
     st.markdown("---")
-    st.markdown("### 🎅 Santa Shalv says:")
+    st.markdown("### 💌 Daily Note")
     if "daily_note" not in st.session_state:
         st.session_state.daily_note = get_ai_love_note()  
     st.info(f"📜 {st.session_state.daily_note}")
-    if st.button("New Wish ✨", use_container_width=True):
+    if st.button("New Note ✨", use_container_width=True):
         del st.session_state.daily_note
         st.rerun()
         
     st.markdown("---")
-    st.markdown("### 🎵 Christmas Jukebox")
-    query = st.text_input("Play a Christmas carol 🎻", placeholder="Song name / Artist / Lyrics")
+    st.markdown("### 🎵 Our Jam")
+    query = st.text_input("Play a song for us 🎻", placeholder="Song name / Artist")
     
     if query:
-        with st.spinner("Asking the Elves (Searching YouTube)..."):
-            # Using the ROBUST custom search function
+        with st.spinner("DJ Shalv is searching..."):
             results = youtube_search(query, limit=5)
             
             if results:
@@ -1206,33 +1169,31 @@ with tab1:
                 selected = st.selectbox("Pick one 🎶", options.keys())
                 st.video(options[selected])
             else:
-                st.error("YouTube servers are down. They're probably also celebrating Christmas! 🎅'")
+                st.error("YouTube is sleepy. Try again later!")
     else:
-        st.caption("Try: 'Mistletoe Justin Bieber', 'Last Christmas', 'Snowman Sia'")
-# --- TAB 2: FESTIVE FOOD ---
+        st.caption("Try: 'Perfect Ed Sheeran', 'Tum Hi Ho', 'Lover'")
+
+# --- TAB 2: FOOD ---
 with tab2:
-    st.markdown("### 🍪 Winter Cravings")
-    st.write("Let's get chubby together this winter.")
+    st.markdown("### 🍽️ Date Night Menu")
+    st.write("What are we craving, my lady?")
     
-    vibe = st.select_slider("Craving?", options=["Hot Chocolate ☕", "Cheesy Pizza 🍕", "Warm Waffle 🧇", "Spicy Ramen 🍜", "Plum Cake 🍰"])
+    vibe = st.select_slider("Craving?", options=["Coffee Date ☕", "Desi Tadka 🍛", "Asian/Ramen 🍜", "Italian/Pizza 🍕", "Sweet Treat 🍰"])
     
-    if st.button("Find Winter Treat 🍬", use_container_width=True):
-        with st.spinner("Checking Santa's list..."):
+    if st.button("Find Place 🍬", use_container_width=True):
+        with st.spinner("Checking Zomato (via AI)..."):
             suggestion = get_food_suggestion(vibe)
             st.success(suggestion)
             st.balloons()
 
-# --- TAB 3: NAUGHTY SLOTS (Fail-Safe Version) ---
-# --- TAB 3: NAUGHTY SLOTS (Rigged: Every 3rd Spin = Face Sitting) ---
+# --- TAB 3: NAUGHTY SLOTS (Unchanged but styled) ---
 with tab3:
     st.markdown("### 🎰 Date Night Roulette")
-    st.caption("Rules: Select who is spinning. You MUST do what the card says. 🌶️")
+    st.caption("Rules: You spin, we do. 🌶️")
     
-    # 1. INITIALIZE THE HIDDEN COUNTER
     if "spin_count" not in st.session_state:
         st.session_state.spin_count = 0
     
-    # --- THE TOGGLE ---
     player_turn = st.radio(
         "Who is spinning?",
         ["Her Turn 👩", "His Turn 👨"],
@@ -1240,48 +1201,43 @@ with tab3:
         label_visibility="collapsed"
     )
 
-    # THE EXPANDED 18+ POOL
+    # (Keeping your inventory list same as before for brevity)
     naughty_inventory = [
-        ("🧊", "SENSORY", "Ice Play: Run an ice cube all over my body (don't forget the nipples/neck)"),
-        ("🫣", "TEASE", "Blindfold: Put on a blindfold. The other person does whatever they want for 5 mins."),
-        ("👙", "VIEW", "Private Strip Tease: Pick a song and take it ALL off slowly. Maintain eye contact."),
-        ("👅", "ORAL", "Worship: 5 minutes of oral pleasure on the receiver. No penetration allowed yet."),
-        ("🧴", "TOUCH", "Slippery Slope: Full body oil massage (Nude). Happy ending is mandatory."),
-        ("🤫", "DIRTY", "Whisper: Whisper exactly what you want to do to the other person in filthy detail."),
-        ("🐕", "ACTION", "Doggy Style: Deep and hard. Hair pulling allowed if consensual."),
-        ("🤠", "ACTION", "Cowgirl / Reverse: Receiver lies down. Spinner gets on top and sets the pace."),
-        ("🥄", "INTIMATE", "The Finger: Finger the other person as per your choice (with due consent)."),
-        ("♋", "MUTUAL", "69: Mutual oral pleasure. Race to see who finishes first."),
-        ("🚿", "WET", "Shower Sex: Get the water running. Soap each other up and get to it."),
-        ("🐇", "QUICK", "The Quickie: Pants down, right here, right now. Fast as possible."),
-        ("🪞", "VIEW", "Vanity: Make out and get intimate in front of a mirror (or camera mode) so we can watch."),
-        ("😈", "DOM", "Yes Sir/Ma'am: For the next hour, the Spinner is the Slave. The other is the Master."),
-        ("👔", "KINK", "Restraint: Use a tie, scarf, or cuffs. Tie the Spinner to the bed."),
-        ("👋", "IMPACT", "Spanking: Bend over. 10 solid spanks. Make them count."),
-        ("🦶", "WORSHIP", "Body Worship: Kiss every inch of the partner's body starting from the feet up."),
-        ("🍆", "ORAL", "Deep Throat / BJ: Take it as deep as possible. Maintain eye contact."),
-        ("🤐", "DENIAL", "Edging: Bring the partner close to finishing, then STOP. Repeat 3 times."),
-        ("🃏", "WILD", "Joker Card: The Spinner chooses ANY position or act they crave right now."),
-        ("🎲", "CHANCE", "Roleplay: We are strangers meeting at a bar. Spinner has to pick the other up."),
-        ("📸", "RISKY", "The Tape: We film ourselves (and delete it immediately after watching)."),
-        ("🤫", "WALK THE TALK", "Tell the other person about your kink, or fetish. Do not lie. And then perform.")
+        ("🧊", "SENSORY", "Ice Play: Run an ice cube all over my body."),
+        ("🫣", "TEASE", "Blindfold: Put on a blindfold. 5 mins of mystery."),
+        ("👙", "VIEW", "Private Strip Tease: Slow and steady."),
+        ("👅", "ORAL", "Worship: 5 minutes of oral pleasure."),
+        ("🧴", "TOUCH", "Massage: Full body oil massage."),
+        ("🤫", "DIRTY", "Whisper: Whisper exactly what you want."),
+        ("🐕", "ACTION", "Doggy Style: Deep and hard."),
+        ("🤠", "ACTION", "Cowgirl: You're on top."),
+        ("🥄", "INTIMATE", "The Finger: You know what to do."),
+        ("♋", "MUTUAL", "69: Mutual pleasure."),
+        ("🚿", "WET", "Shower Sex: Let's get wet."),
+        ("🐇", "QUICK", "The Quickie: Right here, right now."),
+        ("🪞", "VIEW", "Vanity: Do it in front of a mirror."),
+        ("😈", "DOM", "Yes Sir/Ma'am: Spinner is the Slave."),
+        ("👔", "KINK", "Restraint: Tie the Spinner to the bed."),
+        ("👋", "IMPACT", "Spanking: 10 solid spanks."),
+        ("🦶", "WORSHIP", "Body Worship: Kiss every inch."),
+        ("🍆", "ORAL", "Deep Throat: Maintain eye contact."),
+        ("🤐", "DENIAL", "Edging: Stop right before the end."),
+        ("🃏", "WILD", "Joker Card: Spinner chooses ANY act."),
+        ("🎲", "CHANCE", "Roleplay: We are strangers meeting at a bar."),
+        ("📸", "RISKY", "The Tape: We film ourselves (and delete later)."),
+        ("🤫", "WALK THE TALK", "Tell me a secret fantasy. Then we do it.")
     ]
     
-    # THE RIGGED ITEM (Stored separately to force it)
-    face_sitting_task = ("👅", "ORAL", "Face Sitting: One lies down, the other sits on their face. Don't move until tapped out.")
+    face_sitting_task = ("👅", "ORAL", "Face Sitting: Don't move until tapped out.")
     
     btn_text = f"SPIN FOR {player_turn.upper()} 🎰"
     
     if st.button(btn_text, use_container_width=True):
-        
-        # Increment the counter
         st.session_state.spin_count += 1
-        
-        with st.spinner("Rolling the dice..."):
+        with st.spinner("Rolling..."):
             time.sleep(1.0)
         
-        # --- THE RIGGING LOGIC ---
-        # If the count is 3, 6, 9, 12... Force Face Sitting
+        # RIGGED LOGIC (Every 3rd spin)
         if st.session_state.spin_count % 3 == 0:
             selected_task = face_sitting_task
         else:
@@ -1289,34 +1245,30 @@ with tab3:
             
         emoji, category, description = selected_task
         
-        # Jackpot Reel
-        st.markdown(f"<h1 style='text-align: center; color: #BB2528 !important; font-size: 60px;'>{emoji} | {emoji} | {emoji}</h1>", unsafe_allow_html=True)
+        st.markdown(f"<h1 style='text-align: center; color: #800020 !important; font-size: 60px;'>{emoji} | {emoji} | {emoji}</h1>", unsafe_allow_html=True)
         st.balloons()
         
-        # THE CARD REVEAL (Fail-Safe Version)
         with st.container(border=True):
             st.markdown(f"#### 🎯 TARGET: {player_turn.upper()}")
             st.markdown(f"**🔥 CATEGORY:** {category}")
             st.divider() 
             st.markdown(f"## {description}")
-            st.caption("*(No backing out now...)*")
+
 # --- TAB 4: VENT & VOICE ---
 with tab4:
-    st.markdown("### ❄️ Cold Outside, Warm Inside")
+    st.markdown("### ☁️ Safe Space")
     
-    # 1. TEXT VENT
-    st.write("Vent here. I'm listening.")
-    reason = st.selectbox("Topic", ["Christmas Stress", "Miss You", "Cold/Sick", "Just Grumpy"])
-    details = st.text_area("Tell Santa Shalv:", placeholder="...")
+    st.write("Vent here. No judgement. Just love.")
+    reason = st.selectbox("Topic", ["Miss You", "Had a Bad Day", "Happy News", "Just Grumpy"])
+    details = st.text_area("Tell me everything:", placeholder="...")
     
-    if st.button("Send Letter 📨", use_container_width=True):
-        st.success("Sent to the North Pole (and my phone). Love you.")
+    if st.button("Send to Shalv 📨", use_container_width=True):
+        st.success("Sent. I'm reading it now.")
         send_notification(f"🚨 Capybara Vent ({reason}): {details}")
 
     st.markdown("---")
     
-    # 2. AUDIO VENT (RESTORED)
-    st.markdown("### 🎙️ Send a Voice Note")
+    st.markdown("### 🎙️ Voice Note")
     audio_file = st.audio_input("Record a message")
 
     if audio_file:
@@ -1325,38 +1277,29 @@ with tab4:
 
     if st.session_state.voice_draft:
         col1, col2 = st.columns(2)
-
         with col1:
             if st.button("❌ Discard", use_container_width=True):
                 st.session_state.voice_draft = None
-                st.info("Recording discarded")
                 st.rerun()
-
         with col2:
             if st.button("📤 Send Voice", use_container_width=True):
-                with st.spinner("Sending to GitHub..."):
+                with st.spinner("Sending..."):
                     try:
-                        raw_url = upload_voice_to_github(
-                            st.session_state.voice_draft,
-                            "webm" 
-                        )
-                        send_notification(
-                            f"🎧 New Xmas voice note from Capybara 💖\n\n▶️ Listen:\n{raw_url}"
-                        )
+                        raw_url = upload_voice_to_github(st.session_state.voice_draft, "webm")
+                        send_notification(f"🎧 New Voice Note from Her 💖\n\n▶️ Listen:\n{raw_url}")
                         st.session_state.voice_draft = None
-                        st.success("Voice note sent 💕")
+                        st.success("Sent! 💕")
                     except Exception as e:
-                        st.error(f"Failed to upload: {e}")
+                        st.error(f"Failed: {e}")
 
 # --- TAB 5: MAP ---
 with tab5:
-    st.markdown("### 📍 Mistletoe Spots")
-    # (Existing map code reused with Christmas Icon colors)
+    st.markdown("### 📍 Our World")
     map_data = pd.DataFrame({
         'lat': [28.4026, 28.4108, 28.3930],
         'lon': [77.0673, 77.0380, 77.0680],
         'label': ['First Date', 'First Kiss', 'First Meeting'],
-        'color': [[255, 215, 0, 200], [255, 0, 0, 200], [0, 128, 0, 200]] # Gold, Red, Green
+        'color': [[255, 215, 0, 200], [255, 0, 0, 200], [0, 128, 0, 200]] 
     })
     
     scatter_layer = pdk.Layer(
@@ -1382,164 +1325,108 @@ with tab5:
     
     view_state = pdk.ViewState(latitude=28.405, longitude=77.055, zoom=13)
     st.pydeck_chart(pdk.Deck(layers=[scatter_layer, text_layer], initial_view_state=view_state))
-    st.caption("Green: Met | Pink: Date | Red: Kiss")
 
 # --- TAB 6: MOVIE ---
 with tab6:
-    st.markdown("### 🎬 Christmas Movie Night")
+    st.markdown("### 🎬 Movie Night")
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        mood = st.selectbox("Vibe", ["Romantic 🥰", "Christmas Cheese 🧀", "Harry Potter Magic ⚡", "Comedy 😂", "Horror 👻"])
+        mood = st.selectbox("Vibe", ["Romantic 🥰", "Comfy/Cozy 🧸", "Comedy 😂", "Thriller 😱"])
     with col2:
         language = st.selectbox("Lang", ["English", "Hindi", "Korean"])
     with col3:
-        platform = st.selectbox("Where?", ["Netflix", "Amazon Prime", "Disney+", "Any"])
+        platform = st.selectbox("Where?", ["Netflix", "Prime", "Hotstar", "Any"])
         
-    if st.button("Pick for us 🍿", use_container_width=True):
-        with st.spinner("Checking Santa's Watchlist..."):
+    if st.button("Recommend 🍿", use_container_width=True):
+        with st.spinner("Consulting the cinema gods..."):
             rec = get_movie_suggestion(mood, platform, language)
             st.success(rec)
 
-# --- TAB 7: THE GROUNDBREAKING FEATURE ---
+# --- TAB 7: VAULT ---
 with tab7:
     st.markdown("### 💌 The 'Open When' Vault")
-    st.write("These are digital letters for you to open in 2025 when you need me most.")
+    st.write("Digital letters for when you need me most.")
     
-    # Custom CSS for the Envelopes
     st.markdown("""
     <style>
     .envelope-btn {
-        width: 100%;
-        padding: 20px;
-        background: #F8F9FA;
-        border: 2px dashed #BB2528;
-        border-radius: 10px;
-        text-align: center;
-        font-weight: bold;
-        margin-bottom: 10px;
-        cursor: pointer;
-        transition: 0.3s;
+        width: 100%; padding: 20px; background: #FFF0F5;
+        border: 2px dashed #800020; border-radius: 10px;
+        text-align: center; font-weight: bold; margin-bottom: 10px;
+        cursor: pointer; transition: 0.3s;
     }
-    .envelope-btn:hover {
-        background: #ffe6e6;
-        border-color: #146B3A;
-    }
+    .envelope-btn:hover { background: #FFD700; border-color: #000; }
     </style>
     """, unsafe_allow_html=True)
     
-    # STATE MANAGEMENT FOR ENVELOPES
     if "opened_letter" not in st.session_state:
         st.session_state.opened_letter = None
 
     col1, col2 = st.columns(2)
-    
     with col1:
-        if st.button("Open when you MISS me 🥺", key="miss"):
-            st.session_state.opened_letter = "miss"
-        if st.button("Open when you're MAD at me 😡", key="mad"):
-            st.session_state.opened_letter = "mad"
-        if st.button("Open when you're SAD 😢", key="sad"):
-            st.session_state.opened_letter = "sad"
-
+        if st.button("Open when you MISS me 🥺", key="miss"): st.session_state.opened_letter = "miss"
+        if st.button("Open when you're MAD 😡", key="mad"): st.session_state.opened_letter = "mad"
+        if st.button("Open when you're SAD 😢", key="sad"): st.session_state.opened_letter = "sad"
     with col2:
-        if st.button("Open for a CONFIDENCE boost 💃", key="conf"):
-            st.session_state.opened_letter = "conf"
-        if st.button("Open on CHRISTMAS Morning 🎄", key="xmas"):
-            st.session_state.opened_letter = "xmas"
-        if st.button("Open when you're HUNGRY 🍟", key="hungry"):
-            st.session_state.opened_letter = "hungry"
+        if st.button("Open for CONFIDENCE 💃", key="conf"): st.session_state.opened_letter = "conf"
+        if st.button("Open on NEW YEAR 🎆", key="ny"): st.session_state.opened_letter = "ny"
+        if st.button("Open when HUNGRY 🍟", key="hungry"): st.session_state.opened_letter = "hungry"
 
     st.markdown("---")
     
-    # DISPLAY THE CONTENT
     if st.session_state.opened_letter == "miss":
-        st.info("💌 **Message:** Remember that I am just one call away. Look at our photos in the 'Us' tab. I love you more than code. Call me right now.")
-        # Optional: Add a real voice note URL here if you have one uploaded
-        # st.audio("https://raw.githubusercontent.com/...") 
-        
+        st.info("💌 **Message:** I am just one call away. Look at our photos. I love you more than code. Call me right now.")
     elif st.session_state.opened_letter == "mad":
-        st.warning("💌 **Message:** Okay, I probably messed up. I'm sorry. Take a deep breath. Remember I'm an idiot but I'm *your* idiot. Let's talk it out. 🏳️")
+        st.warning("💌 **Message:** Okay, I messed up. I'm sorry. I'm an idiot, but I'm YOUR idiot. Let's talk? 🏳️")
         st.image("https://media.giphy.com/media/l1J9PVAZTGx0BvZtK/giphy.gif")
-        
     elif st.session_state.opened_letter == "sad":
-        st.success("💌 **Message:** You are the strongest person I know. This feeling will pass. Put on your favorite pajamas, order that Nutella Waffle, and know that I am holding your hand in spirit.")
-        
+        st.success("💌 **Message:** You are the strongest person I know. This will pass. Order a waffle and know I'm hugging you in spirit.")
     elif st.session_state.opened_letter == "conf":
-        st.error("💌 **Message:** HAVE YOU SEEN YOURSELF? You are gorgeous. You are smart. You are the main character. Go look in the mirror and wink at yourself.")
-        
-    elif st.session_state.opened_letter == "xmas":
+        st.error("💌 **Message:** HAVE YOU SEEN YOURSELF? You are gorgeous. You are smart. You are the main character.")
+    elif st.session_state.opened_letter == "ny":
         st.balloons()
-        st.markdown("## 🎁 MERRY CHRISTMAS BABY!")
-        st.write("My promise to you for 2025: To eat more cheese with you, to listen more, and to make you laugh every single day.")
-        st.write("**P.S. Look in the bottom drawer of your cupboard for your real gift 😉**") # EDIT THIS LOCATION
-        
+        st.markdown("## 🎆 HAPPY NEW YEAR BABY!")
+        st.write("My resolution is simple: To make you laugh every single day of 2026.")
     elif st.session_state.opened_letter == "hungry":
-        st.info("💌 **Message:** Why are you reading this? Go open the 'Food' tab and order something! I'm paying (send me the bill).")
+        st.info("💌 **Message:** Go to the 'Food' tab! I'm paying (send bill).")
 
-
-
-
-
-# --- TAB 8: TRIP PLANNER ---
+# --- TAB 8: TRIP ---
 with tab8:
     st.markdown("### ✈️ Let's Run Away")
-    st.caption("Plan our next escape. I'll make it happen.")
-    
     col1, col2 = st.columns(2)
     with col1:
-        destination = st.text_input("Destination?", placeholder="e.g. Goa, Vietnam, Kerala")
-        budget = st.number_input("Total Budget (₹)", min_value=5000, value=50000, step=5000)
+        destination = st.text_input("Where to?", placeholder="Vietnam, Kerala...")
+        budget = st.number_input("Budget (₹)", value=50000, step=5000)
     with col2:
-        start_d = st.date_input("Start Date", min_value=date.today())
-        end_d = st.date_input("End Date", min_value=date.today())
+        start_d = st.date_input("Start", min_value=date.today())
+        end_d = st.date_input("End", min_value=date.today())
         
-    vibe = st.select_slider("Trip Vibe?", options=["Lazy/Relaxed 😴", "Romantic/Luxury 🍷", "Adventure/Active 🧗", "Foodie/Culture 🍜"])
+    vibe = st.select_slider("Trip Vibe?", options=["Lazy 😴", "Romantic 🍷", "Adventure 🧗", "Foodie 🍜"])
     
-    if st.button("Plan It Baby 🌍", use_container_width=True):
+    if st.button("Plan Our Escape 🌍", use_container_width=True):
         if not destination:
-            st.error("Tell me where we are going!")
+            st.error("Pick a place!")
         else:
-            with st.spinner("Calculating flights, hotels, and dinner dates..."):
+            with st.spinner("Planning..."):
                 itinerary = plan_trip(destination, start_d, end_d, budget, vibe)
-                
-                # Using a container to make it look like a printed ticket/document
                 with st.container(border=True):
-                    st.markdown(f"### 🎟️ Itinerary: {destination}")
                     st.markdown(itinerary)
-                    st.caption("Disclaimer: Prices are estimates. Pack your bags!")
 
-# --- TAB 9: FUTURE PREDICTOR ---
+# --- TAB 9: FUTURE ---
 with tab9:
-    st.markdown("### 🔮 Our 2026 Forecast")
-    st.write("Ask the Oracle what happens next year.")
+    st.markdown("### 🔮 Oracle of Love")
+    month = st.selectbox("Pick a Month in 2026", ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
     
-    month = st.selectbox("Pick a Month", [
-        "January", "February", "March", "April", "May", "June", 
-        "July", "August", "September", "October", "November", "December"
-    ])
-    
-    if st.button("Reveal Prophecy 🧙‍♀️", use_container_width=True):
-        with st.spinner("Gazing into the crystal ball..."):
+    if st.button("Reveal Destiny 🧙‍♀️", use_container_width=True):
+        with st.spinner("Gazing into the stars..."):
             prediction = predict_future(month)
-            
-            st.markdown(
-                f"""
-                <div style="
-                    background-color: #E6E6FA; 
-                    border: 2px solid #4B0082; 
-                    padding: 20px; 
-                    border-radius: 15px; 
-                    text-align: center;">
-                    <h3 style="color: #4B0082 !important;">🔮 {month} 2026 🔮</h3>
+            st.markdown(f"""
+                <div style="background-color: #FFF0F5; border: 2px solid #800020; padding: 20px; border-radius: 15px; text-align: center;">
+                    <h3 style="color: #800020 !important;">🔮 {month} 2026 🔮</h3>
                     <p style="font-size: 18px; color: black;">{prediction}</p>
                 </div>
-                """, 
-                unsafe_allow_html=True
-            )
+                """, unsafe_allow_html=True)
 
 # --- FOOTER ---
-st.markdown("<br><hr><center>Made with ❤️ & ❄️ by Shalv for his Capybara</center>", unsafe_allow_html=True)
-
-
-
+st.markdown("<br><hr><center>Made with ❤️ by Shalv for his Capybara</center>", unsafe_allow_html=True)
