@@ -2,47 +2,46 @@
 
 import { useEffect, useState } from "react";
 
-const HEARTS = ["💕", "💖", "🌸", "💗", "🩷", "✨", "🌷"];
-
-type Heart = {
+type Mote = {
   left: number;
   delay: number;
   duration: number;
   size: number;
-  emoji: string;
+  opacity: number;
 };
 
-export default function FloatingHearts({ count = 18 }: { count?: number }) {
-  const [items, setItems] = useState<Heart[]>([]);
+// Slow-drifting dust motes — a quiet, editorial texture, not confetti.
+export default function FloatingHearts({ count = 22 }: { count?: number }) {
+  const [items, setItems] = useState<Mote[]>([]);
 
   useEffect(() => {
     setItems(
-      Array.from({ length: count }).map((_, i) => ({
+      Array.from({ length: count }).map(() => ({
         left: Math.random() * 100,
-        delay: Math.random() * 8,
-        duration: 8 + Math.random() * 10,
-        size: 14 + Math.random() * 22,
-        emoji: HEARTS[i % HEARTS.length],
+        delay: Math.random() * 22,
+        duration: 22 + Math.random() * 28,
+        size: 2 + Math.random() * 4,
+        opacity: 0.25 + Math.random() * 0.35,
       }))
     );
   }, [count]);
 
   return (
     <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
-      {items.map((h, i) => (
+      {items.map((m, i) => (
         <span
           key={i}
-          className="absolute animate-float select-none"
+          className="absolute rounded-full"
           style={{
-            left: `${h.left}%`,
-            fontSize: `${h.size}px`,
-            animationDelay: `${h.delay}s`,
-            animationDuration: `${h.duration}s`,
-            filter: "drop-shadow(0 4px 10px rgba(255,157,188,0.35))",
+            left: `${m.left}%`,
+            bottom: 0,
+            width: `${m.size}px`,
+            height: `${m.size}px`,
+            background: "radial-gradient(circle, rgba(168,95,118,0.9), rgba(168,95,118,0) 70%)",
+            animation: `drift ${m.duration}s linear ${m.delay}s infinite`,
+            opacity: m.opacity,
           }}
-        >
-          {h.emoji}
-        </span>
+        />
       ))}
     </div>
   );

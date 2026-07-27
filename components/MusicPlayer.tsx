@@ -22,10 +22,7 @@ export default function MusicPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (!query.trim()) {
-      setResults([]);
-      return;
-    }
+    if (!query.trim()) { setResults([]); return; }
     setLoading(true);
     const controller = new AbortController();
     const t = setTimeout(async () => {
@@ -47,10 +44,7 @@ export default function MusicPlayer() {
         setLoading(false);
       }
     }, 350);
-    return () => {
-      controller.abort();
-      clearTimeout(t);
-    };
+    return () => { controller.abort(); clearTimeout(t); };
   }, [query]);
 
   useEffect(() => {
@@ -70,82 +64,70 @@ export default function MusicPlayer() {
     setCurrent(t);
     setPlaying(true);
     setProgress(0);
-    // Give the <audio> element a beat to update its src
     setTimeout(async () => {
-      try {
-        await audioRef.current?.play();
-      } catch {
-        setPlaying(false);
-      }
+      try { await audioRef.current?.play(); }
+      catch { setPlaying(false); }
     }, 40);
   }
 
   function toggle() {
     const el = audioRef.current;
     if (!el || !current) return;
-    if (el.paused) {
-      el.play().then(() => setPlaying(true));
-    } else {
-      el.pause();
-      setPlaying(false);
-    }
+    if (el.paused) el.play().then(() => setPlaying(true));
+    else { el.pause(); setPlaying(false); }
   }
 
   return (
-    <div className="w-full bg-white/70 backdrop-blur-md rounded-3xl border border-blush-100 shadow-sm p-6 sm:p-8 animate-fade-in">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blush-300 to-peach-300 flex items-center justify-center text-white text-lg shadow">
-          🎵
-        </div>
-        <div>
-          <h3 className="serif text-2xl text-blush-400 leading-none">our little jukebox</h3>
-          <p className="text-xs text-peach-400 mt-1">search a song, i&apos;ll play it for you 💕</p>
-        </div>
+    <div className="fade-up">
+      <div className="flex items-center gap-4 mb-6">
+        <span className="rule-w-32" />
+        <span className="eyebrow">Chapter III &middot; a song for you</span>
       </div>
+      <h2 className="serif text-3xl sm:text-4xl font-light text-ink leading-tight max-w-xl">
+        Search anything. I&apos;ll play it for you —
+        <span className="italic text-rose"> the way you like it, slow.</span>
+      </h2>
 
-      <div className="relative">
+      <div className="mt-8 relative max-w-xl">
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="e.g. blinding lights, kesariya, taylor swift..."
-          className="w-full px-4 py-3 pl-11 rounded-2xl bg-blush-50 border border-blush-100 focus:outline-none focus:border-blush-300 text-sm"
+          placeholder="pasoori, taylor swift, kesariya…"
+          className="w-full px-5 py-4 pr-24 rounded-none bg-transparent border-b border-ink/20 focus:outline-none focus:border-ink text-lg serif placeholder:text-ink-mute placeholder:italic"
         />
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-blush-300">🔎</span>
-        {loading && (
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-blush-300 animate-pulse">
-            looking...
-          </span>
-        )}
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 text-xs eyebrow text-ink-soft">
+          {loading ? "listening…" : "search"}
+        </div>
       </div>
 
       {results.length > 0 && (
-        <div className="mt-4 max-h-72 overflow-y-auto chat-scroll space-y-2">
+        <div className="mt-6 max-w-xl divide-y divide-ink/10 border-t border-b border-ink/10">
           {results.map((t) => {
             const isPlayingThis = current?.trackId === t.trackId && playing;
             return (
               <button
                 key={t.trackId}
                 onClick={() => play(t)}
-                className={`w-full flex items-center gap-3 p-2 rounded-2xl text-left transition ${
-                  current?.trackId === t.trackId
-                    ? "bg-blush-100"
-                    : "bg-white hover:bg-blush-50"
-                } border border-blush-100`}
+                className={`w-full flex items-center gap-4 py-3 px-1 text-left transition ${
+                  current?.trackId === t.trackId ? "bg-rose-wash/40" : "hover:bg-rose-wash/20"
+                }`}
               >
                 <img
                   src={t.artworkUrl100}
                   alt=""
-                  className="w-12 h-12 rounded-xl shadow-sm object-cover"
+                  className="w-12 h-12 object-cover shadow-soft"
                 />
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-[#4a2e3a] truncate">
+                  <div className="serif text-lg text-ink truncate leading-tight">
                     {t.trackName}
                   </div>
-                  <div className="text-xs text-peach-400 truncate">{t.artistName}</div>
+                  <div className="text-xs tracking-wider2 uppercase text-ink-soft truncate mt-1">
+                    {t.artistName}
+                  </div>
                 </div>
-                <span className="text-blush-400 text-lg">
-                  {isPlayingThis ? "❚❚" : "▶"}
+                <span className="text-rose text-lg font-light">
+                  {isPlayingThis ? "❚❚" : "▷"}
                 </span>
               </button>
             );
@@ -154,38 +136,25 @@ export default function MusicPlayer() {
       )}
 
       {current && (
-        <div className="mt-5 p-4 rounded-2xl bg-gradient-to-br from-blush-100 to-peach-100 border border-blush-200 flex items-center gap-4 animate-pop-in">
-          <div className={`relative ${playing ? "animate-spin-slow" : ""}`}>
-            <img
-              src={current.artworkUrl100}
-              alt=""
-              className="w-16 h-16 rounded-full shadow-md object-cover"
-              style={playing ? { animation: "spin 6s linear infinite" } : undefined}
-            />
-            <div className="absolute inset-0 rounded-full bg-black/10 flex items-center justify-center">
-              <div className="w-2 h-2 rounded-full bg-white/90" />
-            </div>
-          </div>
+        <div className="mt-8 max-w-xl border-t border-b border-ink/15 py-6 flex items-center gap-5">
+          <img
+            src={current.artworkUrl100}
+            alt=""
+            className="w-20 h-20 object-cover shadow-soft"
+            style={playing ? { animation: "spin 12s linear infinite", borderRadius: "9999px" } : undefined}
+          />
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-blush-400 truncate">
-              {current.trackName}
+            <div className="serif text-xl text-ink truncate leading-tight">{current.trackName}</div>
+            <div className="text-xs tracking-wider2 uppercase text-ink-soft truncate mt-1">
+              {current.artistName}
             </div>
-            <div className="text-xs text-peach-400 truncate">{current.artistName}</div>
-            <div className="mt-2 h-1 rounded-full bg-white overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-blush-300 to-peach-300 transition-all"
-                style={{ width: `${Math.min(100, progress * 100)}%` }}
-              />
+            <div className="mt-3 h-px bg-ink/15 overflow-hidden">
+              <div className="h-full bg-rose transition-all" style={{ width: `${Math.min(100, progress * 100)}%` }} />
             </div>
-            <div className="flex justify-between text-[10px] text-peach-400 mt-1">
-              <span>30-sec preview</span>
+            <div className="flex justify-between text-[10px] tracking-wider2 uppercase text-ink-soft mt-2">
+              <span>a thirty-second preview</span>
               {current.trackViewUrl && (
-                <a
-                  href={current.trackViewUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline hover:text-blush-400"
-                >
+                <a href={current.trackViewUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-ink">
                   full song ↗
                 </a>
               )}
@@ -193,23 +162,21 @@ export default function MusicPlayer() {
           </div>
           <button
             onClick={toggle}
-            className="w-11 h-11 shrink-0 rounded-full bg-gradient-to-br from-blush-300 to-peach-300 text-white shadow-md flex items-center justify-center text-lg"
+            className="w-12 h-12 shrink-0 rounded-full border border-ink text-ink flex items-center justify-center hover:bg-ink hover:text-ivory transition"
             aria-label={playing ? "pause" : "play"}
           >
-            {playing ? "❚❚" : "▶"}
+            {playing ? "❚❚" : "▷"}
           </button>
           <audio ref={audioRef} src={current.previewUrl} preload="auto" />
         </div>
       )}
 
       {!current && !loading && results.length === 0 && query.trim() && (
-        <p className="mt-4 text-center text-sm text-peach-400 italic">
-          no matches — try another song?
-        </p>
+        <p className="mt-6 text-sm text-ink-soft italic">nothing found — try another?</p>
       )}
       {!current && !query.trim() && (
-        <p className="mt-4 text-center text-xs text-blush-300 italic">
-          suggest: pasoori · kesariya · blinding lights · agar tum saath ho
+        <p className="mt-6 text-xs tracking-wider2 uppercase text-ink-mute">
+          try &nbsp;&middot;&nbsp; pasoori &nbsp;&middot;&nbsp; kesariya &nbsp;&middot;&nbsp; blinding lights &nbsp;&middot;&nbsp; agar tum saath ho
         </p>
       )}
     </div>
