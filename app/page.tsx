@@ -1,13 +1,19 @@
 "use client";
 
-import { useState, Suspense, lazy } from "react";
+import { useState } from "react";
+import dynamic from "next/dynamic";
 import FloatingHearts from "@/components/FloatingHearts";
 import TogetherCounter from "@/components/TogetherCounter";
 import ChatPanel from "@/components/ChatPanel";
 import MusicPlayer from "@/components/MusicPlayer";
 
-// Lazy-load the 3D scene so the page paints fast
-const Heart3D = lazy(() => import("@/components/Heart3D"));
+// Client-only so it never prerenders (three.js touches window at import time)
+const Heart3D = dynamic(() => import("@/components/Heart3D"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center text-6xl animate-pulse">💗</div>
+  ),
+});
 
 export default function Home() {
   const [chatOpen, setChatOpen] = useState(false);
@@ -46,11 +52,7 @@ export default function Home() {
         </div>
 
         <div className="flex-1 w-full h-[300px] sm:h-[420px] lg:h-[500px] relative">
-          <Suspense fallback={
-            <div className="w-full h-full flex items-center justify-center text-6xl animate-pulse">💗</div>
-          }>
-            <Heart3D />
-          </Suspense>
+          <Heart3D />
         </div>
 
         {/* scroll indicator */}
