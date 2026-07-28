@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase-server";
+import { pushTo } from "@/lib/push";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -49,5 +50,16 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Fire a push to the OTHER person (fire-and-forget so send-latency stays fast)
+  const other: "diya" | "me" = who === "me" ? "diya" : "me";
+  const preview = content.length > 90 ? content.slice(0, 87) + "…" : content;
+  pushTo(other, {
+    title: who === "me" ? "a note from him 💌" : "a note from Diya 💌",
+    body: preview,
+    url: "/",
+    tag: "diya-chat",
+  }).catch(() => {});
+
   return NextResponse.json({ message: data });
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import EnableNotifications from "./EnableNotifications";
 
 type Msg = {
   id: string;
@@ -266,6 +267,9 @@ export default function ChatPanel({ onClose }: { onClose: () => void }) {
               })}
             </div>
 
+            <div className="border-t border-ink/10">
+              <EnableNotifications />
+            </div>
             {sendError && (
               <div className="px-4 py-2 text-[10px] tracking-widest2 uppercase text-rose-deep bg-rose-wash/40 border-t border-rose/20 text-center">
                 {sendError}

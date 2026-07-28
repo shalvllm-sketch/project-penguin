@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fbf6ee"/>
+      <stop offset="1" stop-color="#f0dbd4"/>
+    </linearGradient>
+    <linearGradient id="heart" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a85f76"/>
+      <stop offset="1" stop-color="#7a3f56"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <path
+    transform="translate(256 260) scale(11)"
+    d="M0 8 C -6 2, -12 -6, -6 -12 C -3 -15, 1 -13, 0 -10 C -1 -13, 3 -15, 6 -12 C 12 -6, 6 2, 0 8 Z"
+    fill="url(#heart)"
+  />
+</svg>

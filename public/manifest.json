@@ -1,0 +1,13 @@
+{
+  "name": "For Diya",
+  "short_name": "For Diya",
+  "description": "A tiny corner of the internet, just for us.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbf6ee",
+  "theme_color": "#2e1a24",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
